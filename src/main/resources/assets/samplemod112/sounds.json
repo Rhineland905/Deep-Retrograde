@@ -1,0 +1,23 @@
+{
+  "calcite_break": {
+    "category": "block",
+    "subtitle": "Кальцит ломается",
+    "sounds": [
+      "samplemod112:calcite_break"
+    ]
+  },
+  "calcite_step": {
+    "category": "block",
+    "subtitle": "Шаги по кальциту",
+    "sounds": [
+      "samplemod112:calcite_step"
+    ]
+  },
+  "calcite_place": {
+    "category": "block",
+    "subtitle": "Кальцит ставиться",
+    "sounds": [
+      "samplemod112:calcite_place"
+    ]
+  }
+}
