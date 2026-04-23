@@ -1,9 +1,6 @@
 package com.example.init;
 
-import com.example.objects.blocks.BlockCalcite;
-import com.example.objects.blocks.BlockCustomSlab;
-import com.example.objects.blocks.BlockCustomStairs;
-import com.example.objects.blocks.BlockCustomWall;
+import com.example.objects.blocks.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
@@ -21,5 +18,7 @@ public class BlockInit {
     public static final BlockSlab calcite_slab_double = new BlockCustomSlab.Double("calcite_slab_double", Material.ROCK);
     public static final BlockSlab calcite_slab = new BlockCustomSlab.Half("calcite_slab", Material.ROCK, calcite_slab_double);
 
+    //sculk
+    public static final Block sculk = new BlockSculk("sculk",Material.ROCK);
 
 }

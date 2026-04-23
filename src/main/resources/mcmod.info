@@ -1,13 +1,13 @@
 [
 	{
-		"modid": "samplemod112",
-		"name": "Sample Mod 1.12",
-		"description": "Sample mod for 1.12.2, using ForgeGradle 5.1.",
+		"modid": "Glymworld-DeepslateTuffCalcite-v1.0.0",
+		"name": "Glymworld-DeepslateTuffCalcite-v1.0.0 1.12.1",
+		"description": "Add block form 1.21.11. May",
 		"version": "${version}",
 		"mcversion": "1.12.2",
 		"url": "",
 		"updateUrl": "",
-		"authorList": ["You!"],
+		"authorList": ["Rhineland905"],
 		"credits": "",
 		"logoFile": "",
 		"screenshots": [],

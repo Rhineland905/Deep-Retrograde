@@ -19,5 +19,26 @@
     "sounds": [
       "samplemod112:calcite_place"
     ]
+  },
+  "sculk_place": {
+    "category": "block",
+    "subtitle": "Скалк ставиться",
+    "sounds": [
+      "samplemod112:sculk_place"
+    ]
+  },
+  "sculk_break": {
+    "category": "block",
+    "subtitle": "Скалк ломается",
+    "sounds": [
+      "samplemod112:sculk_break"
+    ]
+  },
+  "sculk_step": {
+    "category": "block",
+    "subtitle": "Шаги по скалку",
+    "sounds": [
+      "samplemod112:sculk_step"
+    ]
   }
 }
