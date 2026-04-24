@@ -1,0 +1,33 @@
+{
+  "group": "samplemod112",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0  ",
+    "34 ",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:calcite"
+    },
+    "3": {
+      "item": "samplemod112:calcite"
+    },
+    "4": {
+      "item": "samplemod112:calcite"
+    },
+    "6": {
+      "item": "samplemod112:calcite"
+    },
+    "7": {
+      "item": "samplemod112:calcite"
+    },
+    "8": {
+      "item": "samplemod112:calcite"
+    }
+  },
+  "result": {
+    "item": "samplemod112:calcite_stairs",
+    "count": 4
+  }
+}

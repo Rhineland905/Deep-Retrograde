@@ -12,7 +12,7 @@ public class BlockCalcite extends BlockBase {
         setSoundType(SoundInit.CALCITE_SOUNDS);
         setHardness(0.75F);
         setResistance(0.75F);
-        setHarvestLevel("pickaxe", 0);
+        this.setHarvestLevel("pickaxe", 0);
         setLightLevel(0.0F);
         setLightOpacity(255);
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);

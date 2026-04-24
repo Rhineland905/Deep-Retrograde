@@ -19,6 +19,6 @@ public class BlockInit {
     public static final BlockSlab calcite_slab = new BlockCustomSlab.Half("calcite_slab", Material.ROCK, calcite_slab_double);
 
     //sculk
-    public static final Block sculk = new BlockSculk("sculk",Material.ROCK);
+    public static final Block sculk = new BlockSculk("sculk",Material.CLAY);
 
 }
