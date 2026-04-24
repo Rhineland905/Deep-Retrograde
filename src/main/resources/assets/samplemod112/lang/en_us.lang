@@ -3,3 +3,6 @@ tile.calcite_stairs.name=Calcite Stairs
 tile.calcite_wall.name=Calcite Wall
 tile.calcite_slab.name=Calcite Slab
 tile.sculk.name=Sculk
+tile.tuff.name=Tuff
+tile.tuff_stairs.name=Tuff Stairs
+tile.tuff_wall.name=Tuff Wall

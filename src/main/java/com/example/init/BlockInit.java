@@ -21,4 +21,10 @@ public class BlockInit {
     //sculk
     public static final Block sculk = new BlockSculk("sculk",Material.CLAY);
 
+    //tuf
+    public static final Block tuff = new BlockTuff("tuff", Material.ROCK);
+    public static final Block tuff_stairs = new BlockCustomStairs("tuff_stairs", tuff.getDefaultState());
+    public static final Block tuff_wall = new BlockCustomWall("tuff_wall", tuff);
+    public static final BlockSlab tuff_slab_double = new BlockCustomSlab.Double("tuff_slab_double", Material.ROCK);
+    public static final BlockSlab tuff_slab = new BlockCustomSlab.Half("tuff_slab", Material.ROCK, tuff_slab_double);
 }

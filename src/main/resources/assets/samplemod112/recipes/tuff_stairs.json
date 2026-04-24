@@ -8,26 +8,26 @@
   ],
   "key": {
     "0": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     },
     "3": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     },
     "4": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     },
     "6": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     },
     "7": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     },
     "8": {
-      "item": "samplemod112:calcite"
+      "item": "samplemod112:tuff"
     }
   },
   "result": {
-    "item": "samplemod112:calcite_stairs",
+    "item": "samplemod112:tuff_stairs",
     "count": 4
   }
 }

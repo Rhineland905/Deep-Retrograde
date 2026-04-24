@@ -40,5 +40,26 @@
     "sounds": [
       "samplemod112:sculk_step"
     ]
+  },
+  "tuff_step": {
+    "category": "block",
+    "subtitle": "Шаги по туфу",
+    "sounds": [
+      "samplemod112:tuff_step"
+    ]
+  },
+  "tuff_break": {
+    "category": "block",
+    "subtitle": "Туф ломается",
+    "sounds": [
+      "samplemod112:tuff_break"
+    ]
+  },
+  "tuff_place": {
+    "category": "block",
+    "subtitle": "Туф ставиться",
+    "sounds": [
+      "samplemod112:tuff_place"
+    ]
   }
 }

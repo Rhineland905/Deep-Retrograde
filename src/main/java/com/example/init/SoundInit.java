@@ -34,4 +34,20 @@ public class SoundInit {
             SCULK_STEP,
             SCULK_STEP
     );
+    //TUFF
+    public static final SoundEvent TUFF_PLACE = new SoundEvent(new ResourceLocation("samplemod112", "tuff_place")).setRegistryName("tuff_place");
+    public static final SoundEvent TUFF_BREAK = new SoundEvent(new ResourceLocation("samplemod112", "tuff_break")).setRegistryName("tuff_break");
+    public static final SoundEvent TUFF_STEP = new SoundEvent(new ResourceLocation("samplemod112", "tuff_step")).setRegistryName("tuff_step");
+
+
+    public static final SoundType TUFF_SOUNDS = new SoundType(
+            1.0F,
+            1.0F,
+            TUFF_BREAK,
+            TUFF_STEP,
+            TUFF_PLACE,
+            TUFF_STEP,
+            TUFF_STEP
+    );
+
 }
