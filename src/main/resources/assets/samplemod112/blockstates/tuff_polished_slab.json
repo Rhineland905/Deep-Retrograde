@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "half=bottom,variant=default": { "model": "samplemod112:tuff_polished/tuff_polished_slab_bottom" },
+    "half=top,variant=default": { "model": "samplemod112:tuff_polished/tuff_polished_slab_top" }
+  }
+}

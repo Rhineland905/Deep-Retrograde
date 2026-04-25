@@ -1,0 +1,6 @@
+{
+  "parent": "block/wall_side",
+  "textures": {
+    "wall": "samplemod112:blocks/tuff_polished/tuff_polished"
+  }
+}

@@ -1,5 +1,5 @@
 {
   "variants": {
-    "normal": { "model": "samplemod112:sculk" }
+    "normal": { "model": "samplemod112:sculk/sculk" }
   }
 }

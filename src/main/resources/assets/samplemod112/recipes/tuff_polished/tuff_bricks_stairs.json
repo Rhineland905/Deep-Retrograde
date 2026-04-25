@@ -1,0 +1,33 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0  ",
+    "34 ",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:tuff_polished"
+    },
+    "3": {
+      "item": "samplemod112:tuff_polished"
+    },
+    "4": {
+      "item": "samplemod112:tuff_polished"
+    },
+    "6": {
+      "item": "samplemod112:tuff_polished"
+    },
+    "7": {
+      "item": "samplemod112:tuff_polished"
+    },
+    "8": {
+      "item": "samplemod112:tuff_polished"
+    }
+  },
+  "result": {
+    "item": "samplemod112:tuff_polished_stairs",
+    "count": 4
+  }
+}
