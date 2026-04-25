@@ -27,4 +27,8 @@ public class BlockInit {
     public static final Block tuff_wall = new BlockCustomWall("tuff_wall", tuff);
     public static final BlockSlab tuff_slab_double = new BlockCustomSlab.Double("tuff_slab_double", Material.ROCK);
     public static final BlockSlab tuff_slab = new BlockCustomSlab.Half("tuff_slab", Material.ROCK, tuff_slab_double);
+
+    //tuff_bricks
+    public static Block tuff_bricks = new BlockTuffBricks("tuff_bricks", Material.ROCK);
+
 }

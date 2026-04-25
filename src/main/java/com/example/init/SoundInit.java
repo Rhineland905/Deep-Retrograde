@@ -49,5 +49,17 @@ public class SoundInit {
             TUFF_STEP,
             TUFF_STEP
     );
+    //TUFF_BRICKS
+    public static final SoundEvent TUFF_BRICKS_BREAK = new SoundEvent(new ResourceLocation("samplemod112", "tuff_bricks_break")).setRegistryName("tuff_bricks_break");
+    public static final SoundEvent TUFF_BRICKS_STEP = new SoundEvent(new ResourceLocation("samplemod112", "tuff_bricks_step")).setRegistryName("tuff_bricks_step");
 
+    public static final SoundType TUFF_BRICKS_SOUNDS = new SoundType(
+            1.0F,
+            1.0F,
+            TUFF_BREAK,
+            TUFF_STEP,
+            TUFF_PLACE,
+            TUFF_STEP,
+            TUFF_STEP
+    );
 }

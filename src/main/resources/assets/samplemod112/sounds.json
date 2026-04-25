@@ -61,5 +61,19 @@
     "sounds": [
       "samplemod112:tuff_place"
     ]
+  },
+  "tuff_bricks_place": {
+    "category": "block",
+    "subtitle": "Туфовые кирпичи ставиться",
+    "sounds": [
+      "samplemod112:tuff_bricks_place"
+    ]
+  },
+  "tuff_bricks_step": {
+    "category": "block",
+    "subtitle": "Туфовые кирпичи ставиться",
+    "sounds": [
+      "samplemod112:tuff_bricks_step"
+    ]
   }
 }
