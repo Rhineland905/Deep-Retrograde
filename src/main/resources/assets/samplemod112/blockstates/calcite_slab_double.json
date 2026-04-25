@@ -1,5 +1,5 @@
 {
   "variants": {
-    "variant=default": { "model": "samplemod112:calcite" }
+    "variant=default": { "model": "samplemod112:calcite/calcite" }
   }
 }

@@ -30,5 +30,8 @@ public class BlockInit {
 
     //tuff_bricks
     public static Block tuff_bricks = new BlockTuffBricks("tuff_bricks", Material.ROCK);
-
+    public static final Block tuff_bricks_stairs = new BlockCustomStairs("tuff_bricks_stairs", tuff.getDefaultState());
+    public static final Block tuff_bricks_wall = new BlockCustomWall("tuff_bricks_wall", tuff_bricks);
+    public static final BlockSlab tuff_bricks_slab_double = new BlockCustomSlab.Double("tuff_bricks_slab_double", Material.ROCK);
+    public static final BlockSlab tuff_bricks_slab = new BlockCustomSlab.Half("tuff_bricks_slab", Material.ROCK, tuff_bricks_slab_double);
 }

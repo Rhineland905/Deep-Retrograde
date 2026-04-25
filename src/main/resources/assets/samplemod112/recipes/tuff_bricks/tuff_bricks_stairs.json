@@ -1,0 +1,33 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0  ",
+    "34 ",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "3": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "4": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "6": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "7": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "8": {
+      "item": "samplemod112:tuff_bricks"
+    }
+  },
+  "result": {
+    "item": "samplemod112:tuff_bricks_stairs",
+    "count": 4
+  }
+}

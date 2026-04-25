@@ -6,3 +6,7 @@ tile.sculk.name=Sculk
 tile.tuff.name=Tuff
 tile.tuff_stairs.name=Tuff Stairs
 tile.tuff_wall.name=Tuff Wall
+tile.tuff_slab.name=Tuff Slab
+tile.tuff_bricks.name=Tuff Bricks
+tile.tuff_bricks_stairs.name=Tuff Bricks Stairs
+tile.tuff_bricks_slab.name=Tuff Bricks Slab

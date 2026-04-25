@@ -1,5 +1,6 @@
 {
   "variants": {
-    "normal": { "model": "samplemod112:calcite" }
+    "normal": { "model": "samplemod112:calcite/calcite" },
+    "inventory": { "model": "samplemod112:calcite/calcite" }
   }
 }

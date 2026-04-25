@@ -1,0 +1,8 @@
+{
+  "parent": "block/half_slab",
+  "textures": {
+    "bottom": "samplemod112:blocks/calcite/calcite",
+    "top": "samplemod112:blocks/calcite/calcite",
+    "side": "samplemod112:blocks/calcite/calcite"
+  }
+}

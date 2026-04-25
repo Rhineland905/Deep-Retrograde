@@ -1,5 +1,5 @@
 {
   "variants": {
-    "variant=default": { "model": "samplemod112:tuff" }
+    "variant=default": { "model": "samplemod112:tuff/tuff" }
   }
 }

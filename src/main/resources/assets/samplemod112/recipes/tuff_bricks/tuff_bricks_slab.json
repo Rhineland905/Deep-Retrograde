@@ -1,0 +1,23 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "1": {
+      "item": "samplemod112:tuff_bricks"
+    },
+    "2": {
+      "item": "samplemod112:tuff_bricks"
+    }
+  },
+  "result": {
+    "item": "samplemod112:tuff_bricks_slab",
+    "data": 0,
+    "count": 6
+  }
+}

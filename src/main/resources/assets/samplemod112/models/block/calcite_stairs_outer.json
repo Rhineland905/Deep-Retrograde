@@ -1,8 +1,0 @@
-{
-  "parent": "block/outer_stairs",
-  "textures": {
-    "bottom": "samplemod112:blocks/calcite",
-    "top": "samplemod112:blocks/calcite",
-    "side": "samplemod112:blocks/calcite"
-  }
-}

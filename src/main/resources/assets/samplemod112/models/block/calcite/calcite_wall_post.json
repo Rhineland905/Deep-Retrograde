@@ -1,6 +1,6 @@
 {
   "parent": "block/wall_post",
   "textures": {
-    "wall": "samplemod112:blocks/calcite"
+    "wall": "samplemod112:blocks/calcite/calcite"
   }
 }
