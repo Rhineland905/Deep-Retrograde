@@ -41,4 +41,13 @@ public class BlockInit {
     public static final Block tuff_polished_bricks_wall = new BlockCustomWall("tuff_polished_wall", tuff_polished);
     public static final BlockSlab tuff_polished_slab_double = new BlockCustomSlab.Double("tuff_polished_slab_double", Material.ROCK);
     public static final BlockSlab tuff_polished_slab = new BlockCustomSlab.Half("tuff_polished_slab", Material.ROCK, tuff_polished_slab_double);
+
+    //chiseled_tuff
+    public static Block chiseled_tuff = new BlockTuff("chiseled_tuff", Material.ROCK);
+
+    //chiseled_tuff_bricks
+    public static Block chiseled_tuff_bricks = new BlockTuff("chiseled_tuff_bricks", Material.ROCK);
+
+    //StoneCutter
+    public static Block stonecutter = new  BlockStoneCutter("stonecutter", Material.ROCK);
 }

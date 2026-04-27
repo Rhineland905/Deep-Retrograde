@@ -24,3 +24,12 @@ tile.tuff_polished.name=Tuff Polished
 tile.tuff_polished_stairs.name=Tuff Polished Stairs
 tile.tuff_polished_wall.name=Tuff Polished Wall
 tile.tuff_polished_slab.name=Tuff Polished Slab
+
+#chiseled_tuff
+tile.chiseled_tuff.name=Tuff Chiseled
+
+#chiseled_tuff_bricks
+tile.chiseled_tuff_bricks.name=Tuff Chiseled Bricks
+
+#stonecutter
+tile.stonecutter.name=Stone Cutter

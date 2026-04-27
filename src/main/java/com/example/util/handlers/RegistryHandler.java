@@ -1,5 +1,6 @@
 package com.example.util.handlers;
 
+import com.example.SampleMod112;
 import com.example.init.BlockInit;
 import com.example.init.ItemInit;
 import com.example.util.IHasModel;
@@ -8,7 +9,9 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent; // <-- Добавлен правильный импорт
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod.EventBusSubscriber
 public class RegistryHandler {

@@ -1,0 +1,26 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "01",
+    "23"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:chiseled_tuff"
+    },
+    "1": {
+      "item": "samplemod112:chiseled_tuff"
+    },
+    "2": {
+      "item": "samplemod112:chiseled_tuff"
+    },
+    "3": {
+      "item": "samplemod112:chiseled_tuff"
+    }
+  },
+  "result": {
+    "item": "samplemod112:chiseled_tuff_bricks",
+    "count": 4
+  }
+}
