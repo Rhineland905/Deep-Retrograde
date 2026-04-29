@@ -22,8 +22,8 @@ public class GuiStoneCutter extends GuiContainer {
     private int scrollRow = 0;
     private boolean isScrolling = false;
 
-    private static final int COLUMNS = 3;
-    private static final int VISIBLE_ROWS = 4;
+    private static final int COLUMNS = 6;
+    private static final int VISIBLE_ROWS = 6;
 
     public GuiStoneCutter(InventoryPlayer playerInv) {
         super(new ContainerStoneCutter(playerInv));
@@ -92,8 +92,8 @@ public class GuiStoneCutter extends GuiContainer {
         for (int i = 0; i < (VISIBLE_ROWS * COLUMNS); i++) {
             int recipeIndex = i + (scrollRow * COLUMNS);
             if (recipeIndex < recipes.size()) {
-                int slotX = x + 53 + (i % 3) * step;
-                int slotY = y + 16 + (i / 3) * step;
+                int slotX = x + 53 + (i % COLUMNS) * step;
+                int slotY = y + 16 + (i / COLUMNS) * step;
 
 
                 GlStateManager.disableLighting(); // Выключаем свет для плоской текстуры рамки
@@ -106,7 +106,7 @@ public class GuiStoneCutter extends GuiContainer {
             }
         }
 
-        // 2. ВЫКЛЮЧАЕМ СВЕТ ПОСЛЕ ЦИКЛА
+
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
     }

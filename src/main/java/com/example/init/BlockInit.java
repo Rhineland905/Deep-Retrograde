@@ -38,7 +38,7 @@ public class BlockInit {
     //polished_tuff
     public static Block tuff_polished = new BlockTuffBricks("tuff_polished", Material.ROCK);
     public static final Block tuff_polished_stairs = new BlockCustomStairs("tuff_polished_stairs", tuff_polished.getDefaultState());
-    public static final Block tuff_polished_bricks_wall = new BlockCustomWall("tuff_polished_wall", tuff_polished);
+    public static final Block tuff_polished_wall = new BlockCustomWall("tuff_polished_wall", tuff_polished);
     public static final BlockSlab tuff_polished_slab_double = new BlockCustomSlab.Double("tuff_polished_slab_double", Material.ROCK);
     public static final BlockSlab tuff_polished_slab = new BlockCustomSlab.Half("tuff_polished_slab", Material.ROCK, tuff_polished_slab_double);
 

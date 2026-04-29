@@ -19,7 +19,6 @@ public class BlockStoneCutter extends BlockBase {
 
     public BlockStoneCutter(String name, Material material) {
         super(name, material);
-        setSoundType(SoundInit.SCULK_SOUNDS);
         setHardness(2.0F);
         setResistance(8.0F);
 
