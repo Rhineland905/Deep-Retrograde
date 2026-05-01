@@ -1,0 +1,6 @@
+{
+  "parent": "block/wall_side",
+  "textures": {
+    "wall": "samplemod112:blocks/deepslate_bricks/deepslate_bricks"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:deepslate_bricks"
+    },
+    "1": {
+      "item": "samplemod112:deepslate_bricks"
+    },
+    "2": {
+      "item": "samplemod112:deepslate_bricks"
+    },
+    "3": {
+      "item": "samplemod112:deepslate_bricks"
+    },
+    "4": {
+      "item": "samplemod112:deepslate_bricks"
+    },
+    "5": {
+      "item": "samplemod112:deepslate_bricks"
+    }
+  },
+  "result": {
+    "item": "samplemod112:deepslate_bricks_wall",
+    "count": 6
+  }
+}

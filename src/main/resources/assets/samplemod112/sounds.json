@@ -75,5 +75,26 @@
     "sounds": [
       "samplemod112:tuff_bricks_step"
     ]
+  },
+  "deepslate_break": {
+    "category": "block",
+    "subtitle": "Deepslate break",
+    "sounds": [
+      "samplemod112:deepslate_break"
+    ]
+  },
+  "deepslate_place": {
+    "category": "block",
+    "subtitle": "Deepslate place",
+    "sounds": [
+      "samplemod112:deepslate_place"
+    ]
+  },
+  "deepslate_step": {
+    "category": "block",
+    "subtitle": "Deepslate step",
+    "sounds": [
+      "samplemod112:deepslate_step"
+    ]
   }
 }

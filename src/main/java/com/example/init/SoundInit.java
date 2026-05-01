@@ -56,10 +56,26 @@ public class SoundInit {
     public static final SoundType TUFF_BRICKS_SOUNDS = new SoundType(
             1.0F,
             1.0F,
-            TUFF_BREAK,
-            TUFF_STEP,
+            TUFF_BRICKS_BREAK,
+            TUFF_BRICKS_STEP,
             TUFF_PLACE,
             TUFF_STEP,
             TUFF_STEP
+    );
+
+    //DEEPSLATE
+    public static final SoundEvent DEEPSLATE_BREAK = new SoundEvent(new ResourceLocation("samplemod112", "deepslate_break")).setRegistryName("deepslate_break");
+    public static final SoundEvent DEEPSLATE_STEP = new SoundEvent(new ResourceLocation("samplemod112", "deepslate_step")).setRegistryName("deepslate_step");
+    public static final SoundEvent DEEPSLATE_PLACE = new SoundEvent(new ResourceLocation("samplemod112", "deepslate_place")).setRegistryName("deepslate_place");
+
+
+    public static final SoundType DEEPSLATE_SOUNDS = new SoundType(
+            1.0F,
+            1.0F,
+            DEEPSLATE_BREAK,
+            DEEPSLATE_STEP,
+            DEEPSLATE_PLACE,
+            DEEPSLATE_STEP,
+            DEEPSLATE_STEP
     );
 }

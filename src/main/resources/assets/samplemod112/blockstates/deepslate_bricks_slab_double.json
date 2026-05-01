@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "variant=default": { "model": "samplemod112:deepslate_bricks/deepslate_bricks" }
+  }
+}

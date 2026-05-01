@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "normal": { "model": "samplemod112:cobbled_deepslate/cobbled_deepslate" },
+    "inventory": { "model": "samplemod112:cobbled_deepslate/cobbled_deepslate" }
+  }
+}

@@ -36,6 +36,7 @@ public class StoneCutterRecipeManager {
 
         //DIORITE
         addRecipe(new ItemStack(Blocks.STONE,1,3), new ItemStack(Blocks.STONE, 1,4), "Diorite");
+        addRecipe(new ItemStack(Blocks.STONE,1,3), new ItemStack(BlockInit.calcite,1), "calcite");
 
         //ANDEZITE
         addRecipe(new ItemStack(Blocks.STONE,1,5), new ItemStack(Blocks.STONE, 1,6), "Andezite");
@@ -65,6 +66,13 @@ public class StoneCutterRecipeManager {
         addRecipe(new ItemStack(BlockInit.tuff_polished), new ItemStack(BlockInit.tuff_polished_slab, 2), "tuff polished slab");
         addRecipe(new ItemStack(BlockInit.tuff_polished), new ItemStack(BlockInit.tuff_polished_stairs, 1), "tuff polished stairs");
         addRecipe(new ItemStack(BlockInit.tuff_polished), new ItemStack(BlockInit.tuff_polished_wall, 1), "tuff polished stairs");
+
+        //DEEPSLATE
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks, 1), "deepslate bricks");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks_slab, 2), "deepslate slab");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks_wall, 1), "deepslate wall");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks_stairs, 1), "deepslate stairs");
+
     }
 
     public static void addRecipe(ItemStack input, ItemStack output, String name) {

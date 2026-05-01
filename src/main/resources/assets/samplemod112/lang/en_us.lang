@@ -1,13 +1,13 @@
-#calcite
+#Calcite
 tile.calcite.name=Calcite
 tile.calcite_stairs.name=Calcite Stairs
 tile.calcite_wall.name=Calcite Wall
 tile.calcite_slab.name=Calcite Slab
 
-#sculk
+#Sculk
 tile.sculk.name=Sculk
 
-#tuff
+#Tuff
 tile.tuff.name=Tuff
 tile.tuff_stairs.name=Tuff Stairs
 tile.tuff_wall.name=Tuff Wall
@@ -19,17 +19,29 @@ tile.tuff_bricks_stairs.name=Tuff Bricks Stairs
 tile.tuff_bricks_slab.name=Tuff Bricks Slab
 tile.tuff_bricks_wall.name=Tuff Bricks Wall
 
-#tuff_polished
+#Tuff Polished
 tile.tuff_polished.name=Tuff Polished
 tile.tuff_polished_stairs.name=Tuff Polished Stairs
 tile.tuff_polished_wall.name=Tuff Polished Wall
 tile.tuff_polished_slab.name=Tuff Polished Slab
 
-#chiseled_tuff
+#Chiseled Tuff
 tile.chiseled_tuff.name=Tuff Chiseled
 
-#chiseled_tuff_bricks
+#Chiseled Tuff Bricks
 tile.chiseled_tuff_bricks.name=Tuff Chiseled Bricks
+
+#Deepslate
+tile.deepslate.name=Deepslate
+
+#Cobbled Deepslate
+tile.cobbled_deepslate.name=Cobbled Deepslate
+
+#Deepslate Bricks
+tile.deepslate_bricks.name=Deepslate Bricks
+tile.deepslate_bricks_stairs.name=Deepslate Bricks Stairs
+tile.deepslate_bricks_wall.name=Deepslate Bricks Wall
+tile.deepslate_bricks_slab.name=Deepslate Bricks Slab
 
 #stonecutter
 tile.stonecutter.name=Stone Cutter

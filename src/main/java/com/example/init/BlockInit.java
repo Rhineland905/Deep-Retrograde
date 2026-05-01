@@ -50,4 +50,21 @@ public class BlockInit {
 
     //StoneCutter
     public static Block stonecutter = new  BlockStoneCutter("stonecutter", Material.ROCK);
+
+    //Deepslate
+    public static  Block deepslate= new BlockDeepslate("deepslate", Material.ROCK);
+
+    //Cobbled Deepslate
+    public static  Block cobbled_deepslate= new BlockCobbledDeepslate("cobbled_deepslate", Material.ROCK);
+
+
+    //Deepslate_bricks
+    public static  Block deepslate_bricks= new BlockCobbledDeepslate("deepslate_bricks", Material.ROCK);
+    public static  Block deepslate_bricks_stairs= new BlockCustomStairs("deepslate_bricks_stairs", deepslate_bricks.getDefaultState());
+    public static final Block deepslate_bricks_wall = new BlockCustomWall("deepslate_bricks_wall", deepslate_bricks);
+    public static final BlockSlab deepslate_bricks_slab_double = new BlockCustomSlab.Double("deepslate_bricks_slab_double", Material.ROCK);
+    public static final BlockSlab deepslate_bricks_slab = new BlockCustomSlab.Half("deepslate_bricks_slab", Material.ROCK, deepslate_bricks_slab_double);
+
+
+
 }
