@@ -73,6 +73,34 @@ public class StoneCutterRecipeManager {
         addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks_wall, 1), "deepslate wall");
         addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_bricks_stairs, 1), "deepslate stairs");
 
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.polished_deepslate, 1), "polished deepslate");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.polished_deepslate_wall, 1), "polished deepslate wall");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.polished_deepslate_stairs, 1), "polished deepslate stairs");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.polished_deepslate_slab, 1), "polished deepslate slab");
+
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.cracked_deepslate_bricks, 1), "cracked deepslate bricks");
+
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.chiseled_deepslate, 1), "chiseled deepslate");
+
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.deepslate_tiles, 1), "deepslate tiles");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.cracked_deepslate_tiles, 1), "cracked deepslate tiles");
+
+
+        //POLISHED DEEPSLATE
+        addRecipe(new ItemStack(BlockInit.polished_deepslate), new ItemStack(BlockInit.polished_deepslate_wall, 1), "polished deepslate wall");
+        addRecipe(new ItemStack(BlockInit.polished_deepslate), new ItemStack(BlockInit.polished_deepslate_stairs, 1), "polished deepslate stairs");
+        addRecipe(new ItemStack(BlockInit.polished_deepslate), new ItemStack(BlockInit.polished_deepslate_slab, 1), "polished deepslate slab");
+
+        //BRICKS DEEPSLATE
+        addRecipe(new ItemStack(BlockInit.deepslate_bricks), new ItemStack(BlockInit.deepslate_bricks_slab, 2), "deepslate slab");
+        addRecipe(new ItemStack(BlockInit.deepslate_bricks), new ItemStack(BlockInit.deepslate_bricks_wall, 1), "deepslate wall");
+        addRecipe(new ItemStack(BlockInit.deepslate_bricks), new ItemStack(BlockInit.deepslate_bricks_stairs, 1), "deepslate stairs");
+        addRecipe(new ItemStack(BlockInit.deepslate), new ItemStack(BlockInit.cracked_deepslate_bricks, 1), "cracked deepslate bricks");
+
+        //DEEPSLATE_TILES
+        addRecipe(new ItemStack(BlockInit.deepslate_tiles), new ItemStack(BlockInit.cracked_deepslate_tiles, 1), "cracked deepslate tiles");
+
+
     }
 
     public static void addRecipe(ItemStack input, ItemStack output, String name) {

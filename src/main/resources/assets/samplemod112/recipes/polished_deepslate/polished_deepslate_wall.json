@@ -1,0 +1,32 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:polished_deepslate"
+    },
+    "1": {
+      "item": "samplemod112:polished_deepslate"
+    },
+    "2": {
+      "item": "samplemod112:polished_deepslate"
+    },
+    "3": {
+      "item": "samplemod112:polished_deepslate"
+    },
+    "4": {
+      "item": "samplemod112:polished_deepslate"
+    },
+    "5": {
+      "item": "samplemod112:polished_deepslate"
+    }
+  },
+  "result": {
+    "item": "samplemod112:polished_deepslate_wall",
+    "count": 6
+  }
+}

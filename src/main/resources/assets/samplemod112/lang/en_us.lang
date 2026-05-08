@@ -37,6 +37,24 @@ tile.deepslate.name=Deepslate
 #Cobbled Deepslate
 tile.cobbled_deepslate.name=Cobbled Deepslate
 
+#Polished Deepslate
+tile.polished_deepslate.name=Polished Deepslate
+tile.polished_deepslate_stairs.name=Polished Deepslate Stairs
+tile.polished_deepslate_wall.name=Polished Deepslate Wall
+tile.polished_deepslate_slab.name=Polished Deepslate Slab
+
+#Chiseled Deepslate
+tile.chiseled_deepslate.name=Chiseled Deepslate
+
+#Cracked Deepslate Bricks
+title.cracked_deepslate_bricks.name=Cracked Deepslate Bricks
+
+#Cracked Deepslate Tiles
+title.cracked_deepslate_tiles.name=Cracked Deepslate Tiles
+
+#Deepslate Tiles
+title.deepslate_tiles.name=Deepslate Tiles
+
 #Deepslate Bricks
 tile.deepslate_bricks.name=Deepslate Bricks
 tile.deepslate_bricks_stairs.name=Deepslate Bricks Stairs

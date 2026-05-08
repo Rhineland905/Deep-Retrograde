@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "normal": { "model": "samplemod112:chiseled_deepslate/chiseled_deepslate" },
+    "inventory": { "model": "samplemod112:chiseled_deepslate/chiseled_deepslate" }
+  }
+}

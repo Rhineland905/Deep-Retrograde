@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "samplemod112:blocks/polished_deepslate/polished_deepslate"
+  }
+}

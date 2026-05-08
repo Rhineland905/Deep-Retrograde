@@ -7,20 +7,20 @@
   ],
   "key": {
     "0": {
-      "item": "samplemod112:deepslate_bricks"
+      "item": "samplemod112:deepslate"
     },
     "1": {
-      "item": "samplemod112:deepslate_bricks"
+      "item": "samplemod112:deepslate"
     },
     "2": {
-      "item": "samplemod112:deepslate_bricks"
+      "item": "samplemod112:deepslate"
     },
     "3": {
-      "item": "samplemod112:deepslate_bricks"
+      "item": "samplemod112:deepslate"
     }
   },
   "result": {
-    "item": "samplemod112:deepslate_bricks_stairs",
+    "item": "samplemod112:deepslate_bricks",
     "count": 4
   }
 }

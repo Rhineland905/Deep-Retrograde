@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "samplemod112:blocks/chiseled_deepslate/chiseled_deepslate"
+  }
+}

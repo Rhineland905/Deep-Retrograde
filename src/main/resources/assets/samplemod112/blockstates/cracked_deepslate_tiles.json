@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "normal": { "model": "samplemod112:cracked_deepslate_tiles/cracked_deepslate_tiles" },
+    "inventory": { "model": "samplemod112:cracked_deepslate_tiles/cracked_deepslate_tiles" }
+  }
+}

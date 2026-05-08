@@ -65,6 +65,23 @@ public class BlockInit {
     public static final BlockSlab deepslate_bricks_slab_double = new BlockCustomSlab.Double("deepslate_bricks_slab_double", Material.ROCK);
     public static final BlockSlab deepslate_bricks_slab = new BlockCustomSlab.Half("deepslate_bricks_slab", Material.ROCK, deepslate_bricks_slab_double);
 
+    //Polished Deepslate
+    public static  Block polished_deepslate= new BlockCobbledDeepslate("polished_deepslate", Material.ROCK);
+    public static  Block polished_deepslate_stairs= new BlockCustomStairs("polished_deepslate_stairs", polished_deepslate.getDefaultState());
+    public static final Block polished_deepslate_wall = new BlockCustomWall("polished_deepslate_wall", deepslate_bricks);
+    public static final BlockSlab polished_deepslate_slab_double = new BlockCustomSlab.Double("polished_deepslate_slab_double", Material.ROCK);
+    public static final BlockSlab polished_deepslate_slab = new BlockCustomSlab.Half("polished_deepslate_slab", Material.ROCK, polished_deepslate_slab_double);
 
+    //Chiseled Deepslate
+    public static  Block chiseled_deepslate= new BlockCobbledDeepslate("chiseled_deepslate", Material.ROCK);
+
+    //Cracked Deepslate Bricks
+    public static  Block cracked_deepslate_bricks= new BlockCobbledDeepslate("cracked_deepslate_bricks", Material.ROCK);
+
+    //Cracked Deepslate Tiles
+    public static  Block cracked_deepslate_tiles= new BlockCobbledDeepslate("cracked_deepslate_tiles", Material.ROCK);
+
+    //Deepslate Tiles
+    public static  Block deepslate_tiles= new BlockCobbledDeepslate("deepslate_tiles", Material.ROCK);
 
 }

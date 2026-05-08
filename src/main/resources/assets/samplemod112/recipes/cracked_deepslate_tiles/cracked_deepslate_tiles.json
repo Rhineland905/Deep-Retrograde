@@ -1,0 +1,26 @@
+{
+  "group": "gwdeepslate",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "01",
+    "23"
+  ],
+  "key": {
+    "0": {
+      "item": "samplemod112:deepslate_tiles"
+    },
+    "1": {
+      "item": "samplemod112:deepslate_tiles"
+    },
+    "2": {
+      "item": "samplemod112:deepslate_tiles"
+    },
+    "3": {
+      "item": "samplemod112:deepslate_tiles"
+    }
+  },
+  "result": {
+    "item": "samplemod112:cracked_deepslate_tiles",
+    "count": 4
+  }
+}
