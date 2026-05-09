@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.init.Reference;
+import com.example.world.ModWorldGen;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -8,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import com.example.proxy.CommonProxy;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 
 @Mod(
@@ -31,7 +33,13 @@ public class SampleMod112 {
 	}
 
 	@Mod.EventHandler
+	public void init(FMLInitializationEvent event) {
+		GameRegistry.registerWorldGenerator(new ModWorldGen(), 0);
+	}
+
+	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {}
+
 
 
 }
