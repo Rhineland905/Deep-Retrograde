@@ -78,4 +78,18 @@ public class SoundInit {
             DEEPSLATE_STEP,
             DEEPSLATE_STEP
     );
+
+    //DRIPSTONE
+    public static final SoundEvent DRIPSTONE_BREAK = new SoundEvent(new ResourceLocation("samplemod112", "dripstone_break")).setRegistryName("dripstone_break");
+    public static final SoundEvent DRIPSTONE_STEP = new SoundEvent(new ResourceLocation("samplemod112", "dripstone_step")).setRegistryName("dripstone_step");
+
+    public static final SoundType DRIPSTONE_SOUNDS = new SoundType(
+            1.0F,
+            1.0F,
+            DRIPSTONE_BREAK,
+            DRIPSTONE_STEP,
+            DRIPSTONE_BREAK,
+            DRIPSTONE_STEP,
+            DRIPSTONE_STEP
+    );
 }

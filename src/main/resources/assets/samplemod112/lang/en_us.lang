@@ -61,5 +61,23 @@ tile.deepslate_bricks_stairs.name=Deepslate Bricks Stairs
 tile.deepslate_bricks_wall.name=Deepslate Bricks Wall
 tile.deepslate_bricks_slab.name=Deepslate Bricks Slab
 
+#Deepslate Coal Ore
+tile.deepslate_coal_ore.name=Deepslate Coal Ore
+
+#Deepslate Diamond Ore
+tile.deepslate_diamond_ore.name=Deepslate Diamond Ore
+
+#Deepslate Gold Ore
+tile.deepslate_gold_ore.name=Deepslate Gold Ore
+
+#Deepslate Emerald Ore
+tile.deepslate_emerald_ore.name=Deepslate Emerald Ore
+
+#Deepslate Iron Ore
+tile.deepslate_iron_ore.name=Deepslate Iron Ore
+
+#Dripstone Block
+tile.dripstone_block.name=Dripstone Block
+
 #stonecutter
 tile.stonecutter.name=Stone Cutter

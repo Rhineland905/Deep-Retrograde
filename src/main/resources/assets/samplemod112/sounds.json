@@ -96,5 +96,19 @@
     "sounds": [
       "samplemod112:deepslate_step"
     ]
+  },
+  "dripstone_break": {
+    "category": "block",
+    "subtitle": "Deepslate step",
+    "sounds": [
+      "samplemod112:dripstone_break"
+    ]
+  },
+  "dripstone_step": {
+    "category": "block",
+    "subtitle": "Deepslate step",
+    "sounds": [
+      "samplemod112:dripstone_step"
+    ]
   }
 }

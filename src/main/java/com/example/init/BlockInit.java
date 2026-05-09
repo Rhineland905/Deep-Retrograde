@@ -84,4 +84,22 @@ public class BlockInit {
     //Deepslate Tiles
     public static  Block deepslate_tiles= new BlockCobbledDeepslate("deepslate_tiles", Material.ROCK);
 
+    //Deepslate Coal Ore
+    public static  Block deepslate_coal_ore= new BlockCoalOre("deepslate_coal_ore", Material.ROCK);
+
+    //Deepslate Diamond Ore
+    public static  Block deepslate_diamond_ore= new BlockDiamondOre("deepslate_diamond_ore", Material.ROCK);
+
+    //Deepslate Emerald Ore
+    public static  Block deepslate_emerald_ore= new BlockEmeraldOre("deepslate_emerald_ore", Material.ROCK);
+
+    //Deepslate Gold Ore
+    public static  Block deepslate_gold_ore= new BlockGoldOre("deepslate_gold_ore", Material.ROCK);
+
+    //Deepslate Iron Ore
+    public static  Block deepslate_iron_ore= new BlockIronOre("deepslate_iron_ore", Material.ROCK);
+
+    //Dripstone Block
+    public static  Block dripstone_block= new BlockDripstone("dripstone_block", Material.ROCK);
+
 }
