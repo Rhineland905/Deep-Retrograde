@@ -37,34 +37,62 @@ public class ModWorldGen implements IWorldGenerator {
 
     private void replaceVanillaBlocks(World world, int chunkX, int chunkZ) {
         Chunk chunk = world.getChunk(chunkX, chunkZ);
+        Random random = world.rand; // Берем рандом мира
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int worldX = chunkX * 16 + x;
                 int worldZ = chunkZ * 16 + z;
 
-                for (int y = 0; y <= 20; y++) {
+                // Увеличиваем диапазон проверки до 30, чтобы создать зону смешивания
+                for (int y = 0; y <= 30; y++) {
                     BlockPos pos = new BlockPos(worldX, y, worldZ);
                     Block currentBlock = chunk.getBlockState(pos).getBlock();
 
-                    if (currentBlock == Blocks.STONE || currentBlock == Blocks.BEDROCK || currentBlock == Blocks.DIRT || currentBlock == Blocks.GRAVEL) {
-                        chunk.setBlockState(pos, BlockInit.deepslate.getDefaultState());
-                    } else if (currentBlock == Blocks.IRON_ORE) {
-                        chunk.setBlockState(pos, BlockInit.deepslate_iron_ore.getDefaultState());
-                    } else if (currentBlock == Blocks.COAL_ORE) {
-                        chunk.setBlockState(pos, BlockInit.deepslate_coal_ore.getDefaultState());
-                    } else if (currentBlock == Blocks.GOLD_ORE) {
-                        chunk.setBlockState(pos, BlockInit.deepslate_gold_ore.getDefaultState());
-                    } else if (currentBlock == Blocks.DIAMOND_ORE) {
-                        chunk.setBlockState(pos, BlockInit.deepslate_diamond_ore.getDefaultState());
-                    } else if (currentBlock == Blocks.EMERALD_ORE) {
-                        chunk.setBlockState(pos, BlockInit.deepslate_emerald_ore.getDefaultState());
+                    // Логика размытия границы:
+                    // До 15 высоты — сланец 100%
+                    // От 15 до 25 — шанс плавно падает
+                    boolean shouldBeDeepslate = false;
+
+                    if (y <= 15) {
+                        shouldBeDeepslate = true;
+                    } else if (y <= 25) {
+                        // Рассчитываем шанс: на 16 высоте он ~90%, на 24 высоте ~10%
+                        float chance = 1.0f - ((float)(y - 15) / (25 - 15));
+                        if (random.nextFloat() < chance) {
+                            shouldBeDeepslate = true;
+                        }
+                    }
+
+                    if (shouldBeDeepslate) {
+                        // === 1. ЗАМЕНА ПОРОДЫ ===
+                        if (currentBlock == Blocks.STONE || currentBlock == Blocks.BEDROCK || currentBlock == Blocks.DIRT || currentBlock == Blocks.GRAVEL) {
+                            chunk.setBlockState(pos, BlockInit.deepslate.getDefaultState());
+                        }
+                        // === 2. ЗАМЕНА РУД ===
+                        else if (currentBlock == Blocks.IRON_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_iron_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.COAL_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_coal_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.GOLD_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_gold_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.DIAMOND_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_diamond_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.EMERALD_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_emerald_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.REDSTONE_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_redstone_ore.getDefaultState());
+                        } else if (currentBlock == Blocks.LAPIS_ORE) {
+                            chunk.setBlockState(pos, BlockInit.deepslate_lapis_lazuli_ore.getDefaultState());
+                        }
                     }
                 }
             }
         }
         chunk.markDirty();
     }
+
+
 
     private void generateCustomFeatures(World world, Random random, int chunkX, int chunkZ) {
         // === ТУФ ===
@@ -92,7 +120,6 @@ public class ModWorldGen implements IWorldGenerator {
             int sz = chunkZ * 16 + 8 + random.nextInt(16);
 
             generateSculkPatch(world, random, new BlockPos(sx, sy, sz), 4);
-            System.out.println("[ГЕНЕРАЦИЯ] Скалк заспавнился: X=" + sx + " Y=" + sy + " Z=" + sz);
         }
     }
 

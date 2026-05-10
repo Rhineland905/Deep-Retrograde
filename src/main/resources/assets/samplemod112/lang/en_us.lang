@@ -76,6 +76,12 @@ tile.deepslate_emerald_ore.name=Deepslate Emerald Ore
 #Deepslate Iron Ore
 tile.deepslate_iron_ore.name=Deepslate Iron Ore
 
+#Deepslate Redstone Ore
+tile.deepslate_redstone_ore.name=Deepslate Redstone Ore
+
+#Deepslate Lapis Lazuli Ore
+tile.deepslate_lapis_lazuli_ore.name=Deepslate Lapis Lazuli Ore
+
 #Dripstone Block
 tile.dripstone_block.name=Dripstone Block
 

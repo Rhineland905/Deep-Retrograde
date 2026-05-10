@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.init.RecipesInit;
 import com.example.init.Reference;
 import com.example.world.ModWorldGen;
 import net.minecraftforge.fml.common.Mod;
@@ -35,6 +36,7 @@ public class SampleMod112 {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerWorldGenerator(new ModWorldGen(), 0);
+		RecipesInit.init();
 	}
 
 	@Mod.EventHandler

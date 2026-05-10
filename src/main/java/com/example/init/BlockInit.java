@@ -102,4 +102,10 @@ public class BlockInit {
     //Dripstone Block
     public static  Block dripstone_block= new BlockDripstone("dripstone_block", Material.ROCK);
 
+    //Deepslate Redstone Ore
+    public static  Block deepslate_redstone_ore= new BlockRedstoneOre("deepslate_redstone_ore", Material.ROCK);
+
+    //Deepslate Lapis Lazuli Ore
+    public static  Block deepslate_lapis_lazuli_ore= new BlockLapisLazuliOre("deepslate_lapis_lazuli_ore", Material.ROCK);
+
 }
