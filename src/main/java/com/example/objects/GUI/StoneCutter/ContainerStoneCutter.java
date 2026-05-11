@@ -1,14 +1,16 @@
 package com.example.objects.GUI.StoneCutter;
 
+import com.example.init.SoundInit;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
 import java.util.List;
 
 public class ContainerStoneCutter extends Container {
     private final InventoryBasic inventory = new InventoryBasic("StoneCutter", false, 2);
-    private List<StoneCutterRecipe> availableRecipes;
+    private List<StoneCutterRecipe> availableRecipes = new java.util.ArrayList<>();
     private int selectedRecipeIndex = -1;
 
     public ContainerStoneCutter(InventoryPlayer playerInv) {
@@ -33,6 +35,10 @@ public class ContainerStoneCutter extends Container {
                     input.shrink(1);
                     updateAvailableRecipes();
                 }
+                thePlayer.world.playSound(null,
+                        thePlayer.posX, thePlayer.posY, thePlayer.posZ,
+                        SoundInit.STONECUTTER_USE, SoundCategory.BLOCKS,
+                        0.5F, 1.0F);
                 return super.onTake(thePlayer, stack);
             }
         });

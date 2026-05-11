@@ -110,5 +110,12 @@
     "sounds": [
       "samplemod112:dripstone_step"
     ]
+  },
+  "stonecutter_use": {
+    "category": "block",
+    "subtitle": "Камнерез",
+    "sounds": [
+      "samplemod112:stonecutter_use"
+    ]
   }
 }

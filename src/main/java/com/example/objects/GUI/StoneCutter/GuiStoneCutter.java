@@ -2,9 +2,9 @@ package com.example.objects.GUI.StoneCutter;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Mouse;
@@ -13,17 +13,28 @@ import java.util.List;
 
 public class GuiStoneCutter extends GuiContainer {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation("samplemod112:textures/gui/stonecutter/stonecutter.png");
-    private static final ResourceLocation SCROLLER = new ResourceLocation("samplemod112:textures/gui/stonecutter/sprites/scroll.png");
-    private static final ResourceLocation SELECTED = new ResourceLocation("samplemod112:textures/gui/stonecutter/sprites/selected.png");
+    private static final ResourceLocation TEXTURE   = new ResourceLocation("samplemod112:textures/gui/stonecutter/stonecutter.png");
+    private static final ResourceLocation SCROLLER  = new ResourceLocation("samplemod112:textures/gui/stonecutter/sprites/scroll.png");
+    private static final ResourceLocation SELECTED  = new ResourceLocation("samplemod112:textures/gui/stonecutter/sprites/selected.png");
     private static final ResourceLocation UNSELECTED = new ResourceLocation("samplemod112:textures/gui/stonecutter/sprites/unselected.png");
-    private final ContainerStoneCutter container;
 
-    private int scrollRow = 0;
-    private boolean isScrolling = false;
-
-    private static final int COLUMNS = 6;
+    // Recipe grid layout — matches both rendering and click-detection
+    private static final int GRID_X       = 52;
+    private static final int GRID_Y       = 14;
+    private static final int SLOT_SIZE    = 18;
+    private static final int COLUMNS      = 6;
     private static final int VISIBLE_ROWS = 6;
+
+    // Scrollbar — drawn and detected at the same position (aligned to the track on the texture)
+    private static final int SCROLL_X            = 170;
+    private static final int SCROLL_Y            = GRID_Y;
+    private static final int SCROLL_TRACK_HEIGHT = VISIBLE_ROWS * SLOT_SIZE;         // 72
+    private static final int SCROLL_THUMB_HEIGHT = 15;
+
+    private final ContainerStoneCutter container;
+    private int  scrollRow          = 0;
+    private int  selectedRecipeIndex = -1;
+    private boolean isScrolling     = false;
 
     public GuiStoneCutter(InventoryPlayer playerInv) {
         super(new ContainerStoneCutter(playerInv));
@@ -36,23 +47,24 @@ public class GuiStoneCutter extends GuiContainer {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
 
-        // Логика перетаскивания ползунка
-        boolean isMouseDown = Mouse.isButtonDown(0);
-        int x = (this.width - this.xSize) / 2;
+        int x = (this.width  - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
-        int scrollX = x + 119;
-        int scrollY = y + 15;
+        int absScrollX = x + SCROLL_X;
+        int absScrollY = y + SCROLL_Y;
 
-        if (!this.isScrolling && isMouseDown && mouseX >= scrollX && mouseX < scrollX + 12 && mouseY >= scrollY && mouseY < scrollY + 54) {
-            this.isScrolling = true;
+        boolean isMouseDown = Mouse.isButtonDown(0);
+        if (!isScrolling && isMouseDown
+                && mouseX >= absScrollX && mouseX < absScrollX + 12
+                && mouseY >= absScrollY && mouseY < absScrollY + SCROLL_TRACK_HEIGHT) {
+            isScrolling = true;
         }
-        if (!isMouseDown) this.isScrolling = false;
+        if (!isMouseDown) isScrolling = false;
 
-        if (this.isScrolling) {
-            float f = ((float)(mouseY - scrollY) - 7.5F) / (54.0F - 15.0F);
+        if (isScrolling) {
+            float f = ((float)(mouseY - absScrollY) - SCROLL_THUMB_HEIGHT / 2.0F)
+                    / (float)(SCROLL_TRACK_HEIGHT - SCROLL_THUMB_HEIGHT);
             f = MathHelper.clamp(f, 0.0F, 1.0F);
-            int maxScroll = getMaxScrollRows();
-            this.scrollRow = (int)((double)(f * (float)maxScroll) + 0.5D);
+            scrollRow = Math.round(f * getMaxScrollRows());
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -62,50 +74,48 @@ public class GuiStoneCutter extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(TEXTURE);
-        int x = (this.width - this.xSize) / 2;
+        int x = (this.width  - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
 
-
-        drawModalRectWithCustomSizedTexture(x, y, 0, 0, xSize, ySize, 227, 191);
-
-
-        int maxScroll = getMaxScrollRows();
-        int scrollPos = (maxScroll > 0) ? (int)(41.0F * (float)scrollRow / (float)maxScroll) : 0;
-        this.mc.getTextureManager().bindTexture(SCROLLER);
-        drawModalRectWithCustomSizedTexture(x + 170, y + 15 + scrollPos, 0, 0, 12, 15, 12, 15);
         this.mc.getTextureManager().bindTexture(TEXTURE);
+        drawModalRectWithCustomSizedTexture(x, y, 0, 0, xSize, ySize, xSize, ySize);
+
+        // Scrollbar thumb
+        int maxScroll = getMaxScrollRows();
+        int scrollPos = (maxScroll > 0)
+                ? (SCROLL_TRACK_HEIGHT - SCROLL_THUMB_HEIGHT) * scrollRow / maxScroll
+                : 0;
+        this.mc.getTextureManager().bindTexture(SCROLLER);
+        drawModalRectWithCustomSizedTexture(x + SCROLL_X, y + SCROLL_Y + scrollPos,
+                0, 0, 12, SCROLL_THUMB_HEIGHT, 12, SCROLL_THUMB_HEIGHT);
 
         renderRecipeIcons(x, y);
     }
 
     private void renderRecipeIcons(int x, int y) {
         List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
-        if (recipes.isEmpty()) return;
-
+        if (recipes == null || recipes.isEmpty()) return;
 
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.enableRescaleNormal();
 
-        int step = 19;
+        for (int i = 0; i < VISIBLE_ROWS * COLUMNS; i++) {
+            int recipeIndex = i + scrollRow * COLUMNS;
+            if (recipeIndex >= recipes.size()) break;
 
-        for (int i = 0; i < (VISIBLE_ROWS * COLUMNS); i++) {
-            int recipeIndex = i + (scrollRow * COLUMNS);
-            if (recipeIndex < recipes.size()) {
-                int slotX = x + 53 + (i % COLUMNS) * step;
-                int slotY = y + 16 + (i / COLUMNS) * step;
+            int slotX = x + GRID_X + (i % COLUMNS) * SLOT_SIZE;
+            int slotY = y + GRID_Y + (i / COLUMNS) * SLOT_SIZE;
 
+            GlStateManager.disableLighting();
+            boolean sel = (recipeIndex == selectedRecipeIndex);
+            this.mc.getTextureManager().bindTexture(sel ? SELECTED : UNSELECTED);
+            drawModalRectWithCustomSizedTexture(slotX, slotY, 0, 0, SLOT_SIZE, SLOT_SIZE, SLOT_SIZE, SLOT_SIZE);
+            GlStateManager.enableLighting();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
-                GlStateManager.disableLighting(); // Выключаем свет для плоской текстуры рамки
-                this.mc.getTextureManager().bindTexture(UNSELECTED);
-                drawModalRectWithCustomSizedTexture(slotX, slotY, 0, 0, 18, 18, 18, 18);
-                GlStateManager.enableLighting(); // Включаем обратно для предмета
-
-
-                this.itemRender.renderItemAndEffectIntoGUI(recipes.get(recipeIndex).getOutput(), slotX + 1, slotY + 1);
-            }
+            this.itemRender.renderItemAndEffectIntoGUI(
+                    recipes.get(recipeIndex).getOutput(), slotX + 1, slotY + 1);
         }
-
 
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
@@ -114,19 +124,24 @@ public class GuiStoneCutter extends GuiContainer {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        if (mouseButton == 0) {
-            int x = (this.width - this.xSize) / 2;
-            int y = (this.height - this.ySize) / 2;
-            List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
+        if (mouseButton != 0) return;
 
-            for (int i = 0; i < (VISIBLE_ROWS * COLUMNS); i++) {
-                int slotX = x + 52 + (i % COLUMNS) * 18;
-                int slotY = y + 18 + (i / COLUMNS) * 18;
-                if (mouseX >= slotX && mouseX < slotX + 18 && mouseY >= slotY && mouseY < slotY + 18) {
-                    int recipeIndex = i + (scrollRow * COLUMNS);
-                    if (recipeIndex < recipes.size()) {
-                        this.mc.playerController.sendEnchantPacket(this.container.windowId, recipeIndex);
-                    }
+        List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
+        if (recipes == null || recipes.isEmpty()) return;
+
+        int x = (this.width  - this.xSize) / 2;
+        int y = (this.height - this.ySize) / 2;
+
+        for (int i = 0; i < VISIBLE_ROWS * COLUMNS; i++) {
+            int slotX = x + GRID_X + (i % COLUMNS) * SLOT_SIZE;
+            int slotY = y + GRID_Y + (i / COLUMNS) * SLOT_SIZE;
+
+            if (mouseX >= slotX && mouseX < slotX + SLOT_SIZE
+                    && mouseY >= slotY && mouseY < slotY + SLOT_SIZE) {
+                int recipeIndex = i + scrollRow * COLUMNS;
+                if (recipeIndex < recipes.size()) {
+                    selectedRecipeIndex = recipeIndex;
+                    this.mc.playerController.sendEnchantPacket(this.container.windowId, recipeIndex);
                 }
             }
         }
@@ -137,14 +152,14 @@ public class GuiStoneCutter extends GuiContainer {
         super.handleMouseInput();
         int wheel = Mouse.getEventDWheel();
         if (wheel != 0) {
-            int maxScroll = getMaxScrollRows();
             if (wheel > 0) scrollRow--; else scrollRow++;
-            this.scrollRow = MathHelper.clamp(scrollRow, 0, maxScroll);
+            scrollRow = MathHelper.clamp(scrollRow, 0, getMaxScrollRows());
         }
     }
 
     private int getMaxScrollRows() {
         List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
+        if (recipes == null || recipes.isEmpty()) return 0;
         int totalRows = (int) Math.ceil((double) recipes.size() / COLUMNS);
         return Math.max(0, totalRows - VISIBLE_ROWS);
     }

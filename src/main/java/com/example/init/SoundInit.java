@@ -79,6 +79,9 @@ public class SoundInit {
             DEEPSLATE_STEP
     );
 
+    //STONECUTTER
+    public static final SoundEvent STONECUTTER_USE = new SoundEvent(new ResourceLocation("samplemod112", "stonecutter_use")).setRegistryName("stonecutter_use");
+
     //DRIPSTONE
     public static final SoundEvent DRIPSTONE_BREAK = new SoundEvent(new ResourceLocation("samplemod112", "dripstone_break")).setRegistryName("dripstone_break");
     public static final SoundEvent DRIPSTONE_STEP = new SoundEvent(new ResourceLocation("samplemod112", "dripstone_step")).setRegistryName("dripstone_step");

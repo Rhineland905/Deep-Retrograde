@@ -50,10 +50,10 @@ tile.chiseled_deepslate.name=Chiseled Deepslate
 title.cracked_deepslate_bricks.name=Cracked Deepslate Bricks
 
 #Cracked Deepslate Tiles
-title.cracked_deepslate_tiles.name=Cracked Deepslate Tiles
+tile.cracked_deepslate_tiles.name=Cracked Deepslate Tiles
 
 #Deepslate Tiles
-title.deepslate_tiles.name=Deepslate Tiles
+tile.deepslate_tiles.name=Deepslate Tiles
 
 #Deepslate Bricks
 tile.deepslate_bricks.name=Deepslate Bricks
@@ -84,6 +84,10 @@ tile.deepslate_lapis_lazuli_ore.name=Deepslate Lapis Lazuli Ore
 
 #Dripstone Block
 tile.dripstone_block.name=Dripstone Block
+
+#Cracked Deepslate Bricks
+tile.cracked_deepslate_bricks.name=Cracked Deepslate Bricks
+
 
 #stonecutter
 tile.stonecutter.name=Stone Cutter

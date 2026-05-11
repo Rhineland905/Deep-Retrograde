@@ -22,8 +22,7 @@ public class BlockStoneCutter extends BlockBase {
         setHardness(2.0F);
         setResistance(8.0F);
 
-        this.lightOpacity = 0; // Пропускает свет
-        this.translucent = true; // Важно для прозрачности
+        this.lightOpacity = 0;
         setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
