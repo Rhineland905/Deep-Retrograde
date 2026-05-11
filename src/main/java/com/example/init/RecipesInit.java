@@ -6,6 +6,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.init.Items;
 import net.minecraft.init.Blocks;
 
+
 public class RecipesInit {
     public static void init() {
         
