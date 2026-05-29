@@ -16,16 +16,24 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 compileJava {
 	sourceCompatibility = "8"
 	targetCompatibility = "8"
+	options.encoding = "UTF-8"
 }
 
 repositories {
-	maven {
-		url = "https://maven.minecraftforge.net/"
-	}
+	maven { url = "https://maven.minecraftforge.net/" }
 }
 
 dependencies {
 	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
+
+	// Нет зависимостей от CubicChunks — стабы в src/ покрывают компиляцию,
+	// а реальный мод подключается в сборке отдельно.
+}
+
+// Exclude the CubicChunks compile-only stubs from the output JAR;
+// at runtime the real CubicChunks mod provides those classes.
+jar {
+	exclude 'io/github/opencubicchunks/**'
 }
 
 minecraft {

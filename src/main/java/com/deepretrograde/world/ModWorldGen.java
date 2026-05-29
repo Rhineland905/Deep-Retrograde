@@ -41,9 +41,9 @@ public class ModWorldGen implements IWorldGenerator {
     // Y=4–56  → дипслейт 100% (аналог Y=-60..–8 в 1.21.1)
     // Y=56–72 → зона смешивания (аналог Y=-8..0 в 1.21.1)
     // Y>72    → обычный камень
-    private static final int DEEPSLATE_START   = 4;   // выше бедрока
-    private static final int DEEPSLATE_SOLID   = 56;  // до этой высоты — 100% дипслейт
-    private static final int DEEPSLATE_BLEND   = 72;  // до этой высоты — плавный переход
+    private static final int DEEPSLATE_START   = 5;   // выше зоны бедрока (Y=0–4)
+    private static final int DEEPSLATE_SOLID   = 20;  // до этой высоты — 100% дипслейт
+    private static final int DEEPSLATE_BLEND   = 25;  // до этой высоты — плавный переход
 
     private void replaceVanillaBlocks(World world, int chunkX, int chunkZ) {
         Chunk chunk = world.getChunk(chunkX, chunkZ);
