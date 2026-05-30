@@ -34,7 +34,7 @@ public class RegistryHandler {
                 SoundInit.CALCITE_BREAK, SoundInit.CALCITE_STEP, SoundInit.CALCITE_PLACE,
                 SoundInit.SCULK_PLACE, SoundInit.SCULK_BREAK, SoundInit.SCULK_STEP,
                 SoundInit.TUFF_PLACE, SoundInit.TUFF_BREAK, SoundInit.TUFF_STEP,
-                SoundInit.TUFF_BRICKS_BREAK, SoundInit.TUFF_BRICKS_STEP,
+                SoundInit.TUFF_BRICKS_PLACE, SoundInit.TUFF_BRICKS_STEP,
                 SoundInit.DEEPSLATE_BREAK, SoundInit.DEEPSLATE_STEP, SoundInit.DEEPSLATE_PLACE,
                 SoundInit.DRIPSTONE_BREAK, SoundInit.DRIPSTONE_STEP,
                 SoundInit.STONECUTTER_USE

@@ -549,6 +549,7 @@ public class CubicWorldGen implements ICubicPopulator {
                             || b == Blocks.DIRT           || b == Blocks.GRAVEL
                             || b == BlockInit.tuff        || b == BlockInit.calcite
                             || b == BlockInit.dripstone_block
+                            || b == BlockInit.sculk
                             || b == BlockInit.deepslate_coal_ore
                             || b == BlockInit.deepslate_iron_ore
                             || b == BlockInit.deepslate_gold_ore

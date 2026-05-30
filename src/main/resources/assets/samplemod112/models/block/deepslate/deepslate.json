@@ -1,8 +1,6 @@
 {
-  "parent": "block/cube_bottom_top",
+  "parent": "block/cube_all",
   "textures": {
-    "bottom": "samplemod112:blocks/deepslate/deepslate_top",
-    "top": "samplemod112:blocks/deepslate/deepslate_top",
-    "side": "samplemod112:blocks/deepslate/deepslate"
+    "all": "samplemod112:blocks/deepslate/deepslate"
   }
 }

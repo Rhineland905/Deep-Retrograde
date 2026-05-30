@@ -1,8 +1,8 @@
 {
   "parent": "block/cube_bottom_top",
   "textures": {
-    "bottom": "samplemod112:blocks/chiseled_tuff_bricks/chiseled_tuff_bricks_top",
-    "top": "samplemod112:blocks/chiseled_tuff_bricks/chiseled_tuff_bricks_top",
-    "side": "samplemod112:blocks/chiseled_tuff_bricks/chiseled_tuff_bricks"
+    "bottom": "samplemod112:blocks/chiseled_tuff/chiseled_tuff_top",
+    "top": "samplemod112:blocks/chiseled_tuff/chiseled_tuff_top",
+    "side": "samplemod112:blocks/chiseled_tuff/chiseled_tuff"
   }
 }
