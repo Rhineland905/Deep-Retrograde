@@ -11,9 +11,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.NoiseGeneratorSimplex;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +37,10 @@ public class CubicWorldGen implements ICubicPopulator {
     private static final int SNOW_LINE  = 130;
     private static final int MAX_PEAK   = 278;
 
+    // Флаг 2|16: отправить клиенту, но НЕ сканировать соседей на обсерверы
+    // (во время генерации обсерверов нет — экономим 6 лишних чтений на каждый setBlockState)
+    private static final int GEN_FLAGS = 2 | 16;
+
     private static volatile boolean INITIALIZED = false;
     private static IBlockState CS_AIR, CS_STONE, CS_BEDROCK, CS_LAVA, CS_WATER,
                                 CS_DEEPSLATE, CS_DRIPSTONE,
@@ -54,6 +60,13 @@ public class CubicWorldGen implements ICubicPopulator {
     private static NoiseGeneratorSimplex noiseMountain;
     private static NoiseGeneratorSimplex noiseRidge;
     private static NoiseGeneratorSimplex noiseDetail;
+
+    // Кэш высот рельефа по колонкам чанков: один и тот же столб (wx,wz) нужен
+    // каждому кубу по вертикали (до ~14 кубов от Y=64 до 278) — без кэша
+    // 6 вызовов симплекс-шума пересчитывались бы заново для каждого куба.
+    private static final HashMap<Long, int[]> HEIGHT_CACHE = new HashMap<>();
+    private static final Object HEIGHT_LOCK = new Object();
+    private static final int HEIGHT_CACHE_LIMIT = 4096; // ~4 МБ максимум
 
 
     private static synchronized void ensureInit() {
@@ -83,6 +96,9 @@ public class CubicWorldGen implements ICubicPopulator {
         noiseRidge    = new NoiseGeneratorSimplex(rng);
         noiseDetail   = new NoiseGeneratorSimplex(rng);
         cachedWorldSeed = worldSeed;
+        synchronized (HEIGHT_LOCK) {
+            HEIGHT_CACHE.clear();
+        }
     }
 
     private static WorldGenMinable getOreGen(Block ore, int veinSize) {
@@ -106,23 +122,27 @@ public class CubicWorldGen implements ICubicPopulator {
         int minY = pos.getMinBlockY();
         int maxY = pos.getMaxBlockY();
 
-        if (maxY >= WORLD_FLOOR && minY <= STONE_START)
-            fillAndReplace(world, pos, random, minY, maxY);
+        // Колонка куба берётся ОДИН раз. Прямые chunk.get/setBlockState обходят
+        // World.setBlockState, который на каждый блок заново ищет чанк, шлёт
+        // notifyBlockUpdate и гоняет checkLight — главный источник просадок.
+        Chunk column = world.getChunk(pos.getMinBlockX() >> 4, pos.getMinBlockZ() >> 4);
 
-        if (maxY >= WORLD_FLOOR && minY <= STONE_START)
+        if (maxY >= WORLD_FLOOR && minY <= STONE_START) {
+            fillAndReplace(column, pos, random, minY, maxY);
             generateFeatures(world, random, pos, minY, maxY);
+        }
 
         if (maxY >= BEDROCK_CEIL && minY <= -1)
-            generateCaves(world, pos);
+            generateCaves(column, pos, world.getSeed());
 
         if (maxY >= LAVA_LEVEL + 1 && minY <= -2)
-            generateSpeleothems(world, random, pos);
+            generateSpeleothems(column, random, pos);
 
         if (maxY >= BEDROCK_CEIL && minY <= -1)
-            placeLiquids(world, pos);
+            placeLiquids(column, pos);
 
         if (maxY >= SEA_LEVEL)
-            generateMountainTerrain(world, pos);
+            generateMountainTerrain(column, pos);
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -130,30 +150,41 @@ public class CubicWorldGen implements ICubicPopulator {
     // ═════════════════════════════════════════════════════════════════════════
 
 
-    private void fillAndReplace(World world, CubePos pos, Random random, int minY, int maxY) {
+    private void fillAndReplace(Chunk column, CubePos pos, Random random, int minY, int maxY) {
         int fromY = Math.max(minY, WORLD_FLOOR);
         int toY   = Math.min(maxY, STONE_START);
         int baseX = pos.getMinBlockX(), baseZ = pos.getMinBlockZ();
         BlockPos.MutableBlockPos mp = new BlockPos.MutableBlockPos();
 
-        for (int x = 0; x < 16; x++) {
-            int wx = baseX + x;
-            for (int z = 0; z < 16; z++) {
-                int wz = baseZ + z;
-                for (int y = fromY; y <= toY; y++) {
-                    final IBlockState state;
-                    if (y <= BEDROCK_CEIL) {
-                        float density = 1f - (float)(y - WORLD_FLOOR) * BEDROCK_RANGE_INV;
-                        state = (density > 0f && random.nextFloat() < density)
-                                ? CS_BEDROCK : CS_DEEPSLATE;
-                    } else if (y <= DEEPSLATE_TOP) {
-                        state = CS_DEEPSLATE;
-                    } else {
-                        float t = 1f - (float)(y - DEEPSLATE_TOP) * BLEND_INV;
-                        state = (random.nextFloat() < t) ? CS_DEEPSLATE : CS_STONE;
+        // Y — внешний цикл: зона (бедрок/дипслейт/переход) определяется один раз
+        // на слой, а не на каждый из 256 блоков слоя.
+        for (int y = fromY; y <= toY; y++) {
+            if (y <= BEDROCK_CEIL) {
+                float density = 1f - (float) (y - WORLD_FLOOR) * BEDROCK_RANGE_INV;
+                for (int x = 0; x < 16; x++) {
+                    int wx = baseX + x;
+                    for (int z = 0; z < 16; z++) {
+                        mp.setPos(wx, y, baseZ + z);
+                        column.setBlockState(mp, (density > 0f && random.nextFloat() < density)
+                                ? CS_BEDROCK : CS_DEEPSLATE);
                     }
-                    mp.setPos(wx, y, wz);
-                    world.setBlockState(mp, state, 2);
+                }
+            } else if (y <= DEEPSLATE_TOP) {
+                for (int x = 0; x < 16; x++) {
+                    int wx = baseX + x;
+                    for (int z = 0; z < 16; z++) {
+                        mp.setPos(wx, y, baseZ + z);
+                        column.setBlockState(mp, CS_DEEPSLATE);
+                    }
+                }
+            } else {
+                float t = 1f - (float) (y - DEEPSLATE_TOP) * BLEND_INV;
+                for (int x = 0; x < 16; x++) {
+                    int wx = baseX + x;
+                    for (int z = 0; z < 16; z++) {
+                        mp.setPos(wx, y, baseZ + z);
+                        column.setBlockState(mp, (random.nextFloat() < t) ? CS_DEEPSLATE : CS_STONE);
+                    }
                 }
             }
         }
@@ -200,12 +231,18 @@ public class CubicWorldGen implements ICubicPopulator {
     }
 
 
-    private void generateCaves(World world, CubePos pos) {
+    private void generateCaves(Chunk column, CubePos pos, long worldSeed) {
         int cubeX = pos.getMinBlockX() >> 4;
         int cubeY = pos.getMinBlockY() >> 4;
         int cubeZ = pos.getMinBlockZ() >> 4;
-        long worldSeed = world.getSeed();
         Random cr = CAVE_RAND.get();
+
+        // Вертикальные границы прорезания: ТОЛЬКО внутри текущего куба.
+        // Раньше каждый куб колонки прорезал тоннель по всей высоте — одна и та же
+        // работа повторялась до 4 раз (по числу кубов в полосе -64..0).
+        int minBY = Math.max(pos.getMinBlockY(), BEDROCK_CEIL + 1);
+        int maxBY = Math.min(pos.getMaxBlockY(), STONE_START - 1);
+        if (minBY > maxBY) return;
 
         for (int dcx = -2; dcx <= 2; dcx++) {
             for (int dcy = -1; dcy <= 1; dcy++) {
@@ -223,9 +260,9 @@ public class CubicWorldGen implements ICubicPopulator {
                         float sx = nx * 16 + cr.nextInt(16) + 0.5f;
                         float sy = ny * 16 + cr.nextInt(16) + 0.5f;
                         float sz = nz * 16 + cr.nextInt(16) + 0.5f;
-                        carveTunnel(world, cr, pos, sx, sy, sz, false);
+                        carveTunnel(column, cr, pos, sx, sy, sz, false, minBY, maxBY);
                         if (cr.nextFloat() < 0.18f)
-                            carveTunnel(world, cr, pos, sx, sy, sz, true);
+                            carveTunnel(column, cr, pos, sx, sy, sz, true, minBY, maxBY);
                     }
 
                     if (cr.nextFloat() < 0.22f) {
@@ -233,7 +270,7 @@ public class CubicWorldGen implements ICubicPopulator {
                         int ry = ny * 16 + cr.nextInt(16) + 8;
                         int rz = nz * 16 + cr.nextInt(16) + 8;
                         if (ry > BEDROCK_CEIL && ry < -1)
-                            carveLargeRoom(world, cr, pos, rx, ry, rz);
+                            carveLargeRoom(column, cr, pos, rx, ry, rz, minBY, maxBY);
                     }
                 }
             }
@@ -241,7 +278,7 @@ public class CubicWorldGen implements ICubicPopulator {
     }
 
 
-    private void generateSpeleothems(World world, Random random, CubePos pos) {
+    private void generateSpeleothems(Chunk column, Random random, CubePos pos) {
         int minY = Math.max(pos.getMinBlockY(), LAVA_LEVEL + 1);
         int maxY = Math.min(pos.getMaxBlockY(), STONE_START - 2);
         if (maxY - minY < 3) return;
@@ -256,17 +293,17 @@ public class CubicWorldGen implements ICubicPopulator {
             if (random.nextFloat() < 0.40f) {
                 for (int wy = minY; wy <= maxY - 1; wy++) {
                     mp.setPos(wx, wy, wz);
-                    Block bot = world.getBlockState(mp).getBlock();
+                    Block bot = column.getBlockState(mp).getBlock();
                     if (bot != BlockInit.deepslate && bot != Blocks.STONE) continue;
                     mp.setPos(wx, wy + 1, wz);
-                    if (world.getBlockState(mp).getBlock() != Blocks.AIR) continue;
+                    if (column.getBlockState(mp).getBlock() != Blocks.AIR) continue;
                     int h = 1 + random.nextInt(5);
                     for (int i = 1; i <= h; i++) {
                         int sy = wy + i;
                         if (sy > maxY) break;
                         mp.setPos(wx, sy, wz);
-                        if (world.getBlockState(mp).getBlock() != Blocks.AIR) break;
-                        world.setBlockState(mp, CS_DRIPSTONE, 2);
+                        if (column.getBlockState(mp).getBlock() != Blocks.AIR) break;
+                        column.setBlockState(mp, CS_DRIPSTONE);
                     }
                     break;
                 }
@@ -275,17 +312,17 @@ public class CubicWorldGen implements ICubicPopulator {
             if (random.nextFloat() < 0.35f) {
                 for (int wy = maxY; wy >= minY + 1; wy--) {
                     mp.setPos(wx, wy, wz);
-                    Block top = world.getBlockState(mp).getBlock();
+                    Block top = column.getBlockState(mp).getBlock();
                     if (top != BlockInit.deepslate && top != Blocks.STONE) continue;
                     mp.setPos(wx, wy - 1, wz);
-                    if (world.getBlockState(mp).getBlock() != Blocks.AIR) continue;
+                    if (column.getBlockState(mp).getBlock() != Blocks.AIR) continue;
                     int h = 1 + random.nextInt(3);
                     for (int i = 1; i <= h; i++) {
                         int sy = wy - i;
                         if (sy < minY) break;
                         mp.setPos(wx, sy, wz);
-                        if (world.getBlockState(mp).getBlock() != Blocks.AIR) break;
-                        world.setBlockState(mp, CS_DRIPSTONE, 2);
+                        if (column.getBlockState(mp).getBlock() != Blocks.AIR) break;
+                        column.setBlockState(mp, CS_DRIPSTONE);
                     }
                     break;
                 }
@@ -294,7 +331,7 @@ public class CubicWorldGen implements ICubicPopulator {
     }
 
 
-    private void placeLiquids(World world, CubePos pos) {
+    private void placeLiquids(Chunk column, CubePos pos) {
         int minY = Math.max(pos.getMinBlockY(), BEDROCK_CEIL + 1);
         int maxY = Math.min(pos.getMaxBlockY(), LAVA_LEVEL);
         if (minY > maxY) return;
@@ -306,8 +343,8 @@ public class CubicWorldGen implements ICubicPopulator {
             for (int wz = minBZ; wz <= maxBZ; wz++)
                 for (int wy = minY; wy <= maxY; wy++) {
                     p.setPos(wx, wy, wz);
-                    if (world.getBlockState(p).getBlock() == Blocks.AIR)
-                        world.setBlockState(p, CS_LAVA, 2);
+                    if (column.getBlockState(p).getBlock() == Blocks.AIR)
+                        column.setBlockState(p, CS_LAVA);
                 }
     }
 
@@ -315,7 +352,7 @@ public class CubicWorldGen implements ICubicPopulator {
     //  ГОРЫ (наземный рельеф)
     // ═════════════════════════════════════════════════════════════════════════
 
-    private void generateMountainTerrain(World world, CubePos pos) {
+    private void generateMountainTerrain(Chunk column, CubePos pos) {
         int cubMinY = pos.getMinBlockY();
         int cubMaxY = pos.getMaxBlockY();
         if (cubMaxY < SEA_LEVEL || cubMinY > MAX_PEAK) return;
@@ -324,33 +361,35 @@ public class CubicWorldGen implements ICubicPopulator {
         int maxY = Math.min(cubMaxY, MAX_PEAK);
 
         int baseX = pos.getMinBlockX(), baseZ = pos.getMinBlockZ();
+        int[] heights = getColumnHeights(baseX >> 4, baseZ >> 4);
         BlockPos.MutableBlockPos mp = new BlockPos.MutableBlockPos();
 
         for (int x = 0; x < 16; x++) {
             int wx = baseX + x;
             for (int z = 0; z < 16; z++) {
                 int wz = baseZ + z;
-                int terrainH = getMountainHeight(wx, wz);
+                int terrainH = heights[(x << 4) | z];
                 if (terrainH <= SEA_LEVEL) continue;
+                if (terrainH + 1 < minY) continue; // куб целиком выше вершины (и снега)
 
                 for (int y = minY; y <= Math.min(maxY, terrainH); y++) {
                     mp.setPos(wx, y, wz);
-                    Block existing = world.getBlockState(mp).getBlock();
+                    Block existing = column.getBlockState(mp).getBlock();
 
                     if (existing != Blocks.AIR) {
                         if (existing == Blocks.GRASS && y < terrainH - 4)
-                            world.setBlockState(mp, y < terrainH - 8 ? CS_STONE : CS_DIRT, 2);
+                            column.setBlockState(mp, y < terrainH - 8 ? CS_STONE : CS_DIRT);
                         continue;
                     }
 
-                    world.setBlockState(mp, chooseSurfaceBlock(y, terrainH), 2);
+                    column.setBlockState(mp, chooseSurfaceBlock(y, terrainH));
                 }
 
                 int snowY = terrainH + 1;
                 if (terrainH >= SNOW_LINE && snowY >= minY && snowY <= maxY) {
                     mp.setPos(wx, snowY, wz);
-                    if (world.getBlockState(mp).getBlock() == Blocks.AIR)
-                        world.setBlockState(mp, CS_SNOW_LAYER, 2);
+                    if (column.getBlockState(mp).getBlock() == Blocks.AIR)
+                        column.setBlockState(mp, CS_SNOW_LAYER);
                 }
             }
         }
@@ -374,7 +413,29 @@ public class CubicWorldGen implements ICubicPopulator {
     }
 
 
-    private int getMountainHeight(int wx, int wz) {
+    /** Высоты всех 256 столбов колонки чанка, лениво и с кэшем между кубами. */
+    private static int[] getColumnHeights(int chunkX, int chunkZ) {
+        long key = ((long) chunkX << 32) ^ (chunkZ & 0xFFFFFFFFL);
+        synchronized (HEIGHT_LOCK) {
+            int[] cached = HEIGHT_CACHE.get(key);
+            if (cached != null) return cached;
+        }
+
+        int[] h = new int[256];
+        int baseX = chunkX << 4, baseZ = chunkZ << 4;
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++)
+                h[(x << 4) | z] = computeMountainHeight(baseX + x, baseZ + z);
+
+        synchronized (HEIGHT_LOCK) {
+            if (HEIGHT_CACHE.size() >= HEIGHT_CACHE_LIMIT) HEIGHT_CACHE.clear();
+            HEIGHT_CACHE.put(key, h);
+        }
+        return h;
+    }
+
+
+    private static int computeMountainHeight(int wx, int wz) {
         double regional = (noiseRegional.getValue(wx * 0.00040, wz * 0.00040) + 1.0) * 0.5;
         if (regional < 0.30) return SEA_LEVEL;
         double factor = (regional - 0.30) / 0.70;
@@ -430,6 +491,8 @@ public class CubicWorldGen implements ICubicPopulator {
         ), block, radius);
     }
 
+    // sphere/sculk могут пересекать границу колонки (randomPopulationPos даёт
+    // смещение +8), поэтому здесь остаётся world.setBlockState — но с GEN_FLAGS.
     private void sphere(World world, BlockPos c, Block block, int r) {
         IBlockState s = block.getDefaultState();
         int r2 = r * r;
@@ -441,7 +504,7 @@ public class CubicWorldGen implements ICubicPopulator {
                     p.setPos(c.getX()+dx, c.getY()+dy, c.getZ()+dz);
                     Block b = world.getBlockState(p).getBlock();
                     if (b == Blocks.STONE || b == BlockInit.deepslate)
-                        world.setBlockState(p, s, 2);
+                        world.setBlockState(p, s, GEN_FLAGS);
                 }
     }
 
@@ -459,22 +522,24 @@ public class CubicWorldGen implements ICubicPopulator {
                     Block b = world.getBlockState(p).getBlock();
                     if ((b == Blocks.STONE || b == BlockInit.deepslate || b == BlockInit.tuff)
                             && airNeighbour(world, n, px, py, pz))
-                        world.setBlockState(p, s, 2);
+                        world.setBlockState(p, s, GEN_FLAGS);
                 }
     }
 
-    private void carveLargeRoom(World world, Random random, CubePos target,
-                                  int cx, int cy, int cz) {
+    private void carveLargeRoom(Chunk column, Random random, CubePos target,
+                                  int cx, int cy, int cz, int minBY, int maxBY) {
         float rx = 5.0f + random.nextFloat() * 5.0f;
         float ry = 3.0f + random.nextFloat() * 3.0f;
         float rz = 5.0f + random.nextFloat() * 5.0f;
-        carveSphere(world, cx, cy, cz, rx, ry, rz,
+        carveSphere(column, cx, cy, cz, rx, ry, rz,
                 target.getMinBlockX(), target.getMaxBlockX(),
-                target.getMinBlockZ(), target.getMaxBlockZ());
+                target.getMinBlockZ(), target.getMaxBlockZ(),
+                minBY, maxBY);
     }
 
-    private void carveTunnel(World world, Random random, CubePos target,
-                               float sx, float sy, float sz, boolean branch) {
+    private void carveTunnel(Chunk column, Random random, CubePos target,
+                               float sx, float sy, float sz, boolean branch,
+                               int minBY, int maxBY) {
         float yaw   = random.nextFloat() * (float)(Math.PI * 2);
         float pitch = (random.nextFloat() - 0.5f) * 0.5f;
         float x = sx, y = sy, z = sz;
@@ -505,25 +570,27 @@ public class CubicWorldGen implements ICubicPopulator {
 
             int ix = (int) x, iy = (int) y, iz = (int) z;
             if (ix < minBX - margin || ix > maxBX + margin
-                    || iz < minBZ - margin || iz > maxBZ + margin) {
+                    || iz < minBZ - margin || iz > maxBZ + margin
+                    || iy < minBY - margin || iy > maxBY + margin) {
                 if (++outsideStreak > 20) break;
                 continue;
             }
             outsideStreak = 0;
-            carveSphere(world, ix, iy, iz, w, w * 0.45f, w, minBX, maxBX, minBZ, maxBZ);
+            carveSphere(column, ix, iy, iz, w, w * 0.45f, w, minBX, maxBX, minBZ, maxBZ, minBY, maxBY);
         }
     }
 
-    private void carveSphere(World world, int cx, int cy, int cz,
+    private void carveSphere(Chunk column, int cx, int cy, int cz,
                                float rx, float ry, float rz,
-                               int minBX, int maxBX, int minBZ, int maxBZ) {
+                               int minBX, int maxBX, int minBZ, int maxBZ,
+                               int minBY, int maxBY) {
         int irx = Math.max(1, (int) Math.ceil(rx));
         int iry = Math.max(1, (int) Math.ceil(ry));
         int irz = Math.max(1, (int) Math.ceil(rz));
         float invRx = 1f / rx, invRy = 1f / ry, invRz = 1f / rz;
 
-        int wyMin = Math.max(cy - iry, BEDROCK_CEIL + 1);
-        int wyMax = Math.min(cy + iry, STONE_START - 1);
+        int wyMin = Math.max(cy - iry, minBY);
+        int wyMax = Math.min(cy + iry, maxBY);
         if (wyMin > wyMax) return;
         int dyAbsMin = wyMin - cy, dyAbsMax = wyMax - cy;
 
@@ -544,7 +611,7 @@ public class CubicWorldGen implements ICubicPopulator {
                     float fny = dy * invRy;
                     if (xz + fny * fny > 1.0f) continue;
                     p.setPos(wx, cy + dy, wz);
-                    Block b = world.getBlockState(p).getBlock();
+                    Block b = column.getBlockState(p).getBlock();
                     if (b == BlockInit.deepslate          || b == Blocks.STONE
                             || b == Blocks.DIRT           || b == Blocks.GRAVEL
                             || b == BlockInit.tuff        || b == BlockInit.calcite
@@ -557,7 +624,7 @@ public class CubicWorldGen implements ICubicPopulator {
                             || b == BlockInit.deepslate_emerald_ore
                             || b == BlockInit.deepslate_redstone_ore
                             || b == BlockInit.deepslate_lapis_lazuli_ore) {
-                        world.setBlockState(p, CS_AIR, 2);
+                        column.setBlockState(p, CS_AIR);
                     }
                 }
             }
@@ -596,7 +663,8 @@ public class CubicWorldGen implements ICubicPopulator {
                 mp.setPos(bx, floorY - 1, bz);
                 Block fb = world.getBlockState(mp).getBlock();
                 if (fb == BlockInit.deepslate || fb == Blocks.STONE || fb == Blocks.DIRT) {
-                    world.setBlockState(mp, CS_AIR,   2);
+                    // Вода ставится сразу поверх породы — промежуточный setBlockState
+                    // с воздухом был лишним (двойная работа на каждый блок кармана)
                     world.setBlockState(mp, CS_WATER, 3);
                 } else {
                     mp.setPos(bx, floorY, bz);

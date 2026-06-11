@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -45,55 +46,55 @@ public class ModWorldGen implements IWorldGenerator {
     private static final int DEEPSLATE_SOLID   = 20;  // до этой высоты — 100% дипслейт
     private static final int DEEPSLATE_BLEND   = 25;  // до этой высоты — плавный переход
 
+    // Прямая запись в секции чанка (ExtendedBlockStorage) — без пересчёта света
+    // и хайтмапы на каждый блок. Это безопасно: все замены камень→дипслейт и
+    // руда→дипслейт-руда имеют одинаковую непрозрачность, свет не меняется.
     private void replaceVanillaBlocks(World world, int chunkX, int chunkZ) {
         Chunk chunk = world.getChunk(chunkX, chunkZ);
         Random random = world.rand;
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        ExtendedBlockStorage[] storages = chunk.getBlockStorageArray();
+        boolean changed = false;
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int worldX = chunkX * 16 + x;
-                int worldZ = chunkZ * 16 + z;
+        // Y — внешний цикл: секция и шанс замены вычисляются один раз на слой
+        for (int y = DEEPSLATE_START; y <= DEEPSLATE_BLEND; y++) {
+            ExtendedBlockStorage storage = storages[y >> 4];
+            if (storage == Chunk.NULL_BLOCK_STORAGE) continue;
 
-                for (int y = DEEPSLATE_START; y <= DEEPSLATE_BLEND; y++) {
-                    pos.setPos(worldX, y, worldZ);
-                    Block currentBlock = chunk.getBlockState(pos).getBlock();
+            int ly = y & 15;
+            boolean solid = y <= DEEPSLATE_SOLID;
+            // Плавное затухание: 100% на DEEPSLATE_SOLID → 0% на DEEPSLATE_BLEND
+            float chance = 1.0f - ((float)(y - DEEPSLATE_SOLID) / (DEEPSLATE_BLEND - DEEPSLATE_SOLID));
 
-                    boolean shouldBeDeepslate;
-                    if (y <= DEEPSLATE_SOLID) {
-                        shouldBeDeepslate = true;
-                    } else {
-                        // Плавное затухание: 100% на DEEPSLATE_SOLID → 0% на DEEPSLATE_BLEND
-                        float chance = 1.0f - ((float)(y - DEEPSLATE_SOLID) / (DEEPSLATE_BLEND - DEEPSLATE_SOLID));
-                        shouldBeDeepslate = random.nextFloat() < chance;
-                    }
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    Block currentBlock = storage.get(x, ly, z).getBlock();
+                    if (currentBlock == Blocks.AIR) continue;
 
-                    if (shouldBeDeepslate) {
-                        // === 1. ЗАМЕНА ПОРОДЫ ===
-                        if (currentBlock == Blocks.STONE || currentBlock == Blocks.DIRT || currentBlock == Blocks.GRAVEL) {
-                            chunk.setBlockState(pos, BlockInit.deepslate.getDefaultState());
-                        }
-                        // === 2. ЗАМЕНА РУД ===
-                        else if (currentBlock == Blocks.IRON_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_iron_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.COAL_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_coal_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.GOLD_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_gold_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.DIAMOND_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_diamond_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.EMERALD_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_emerald_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.REDSTONE_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_redstone_ore.getDefaultState());
-                        } else if (currentBlock == Blocks.LAPIS_ORE) {
-                            chunk.setBlockState(pos, BlockInit.deepslate_lapis_lazuli_ore.getDefaultState());
-                        }
-                    }
+                    IBlockState replacement = getDeepslateReplacement(currentBlock);
+                    if (replacement == null) continue;
+                    if (!solid && random.nextFloat() >= chance) continue;
+
+                    storage.set(x, ly, z, replacement);
+                    changed = true;
                 }
             }
         }
-        chunk.markDirty();
+        if (changed) chunk.markDirty();
+    }
+
+    private static IBlockState getDeepslateReplacement(Block b) {
+        // === 1. ЗАМЕНА ПОРОДЫ ===
+        if (b == Blocks.STONE || b == Blocks.DIRT || b == Blocks.GRAVEL)
+            return BlockInit.deepslate.getDefaultState();
+        // === 2. ЗАМЕНА РУД ===
+        if (b == Blocks.IRON_ORE)     return BlockInit.deepslate_iron_ore.getDefaultState();
+        if (b == Blocks.COAL_ORE)     return BlockInit.deepslate_coal_ore.getDefaultState();
+        if (b == Blocks.GOLD_ORE)     return BlockInit.deepslate_gold_ore.getDefaultState();
+        if (b == Blocks.DIAMOND_ORE)  return BlockInit.deepslate_diamond_ore.getDefaultState();
+        if (b == Blocks.EMERALD_ORE)  return BlockInit.deepslate_emerald_ore.getDefaultState();
+        if (b == Blocks.REDSTONE_ORE) return BlockInit.deepslate_redstone_ore.getDefaultState();
+        if (b == Blocks.LAPIS_ORE)    return BlockInit.deepslate_lapis_lazuli_ore.getDefaultState();
+        return null;
     }
 
 
@@ -138,7 +139,8 @@ public class ModWorldGen implements IWorldGenerator {
                         pos.setPos(cx + dx, cy + dy, cz + dz);
                         Block currentBlock = world.getBlockState(pos).getBlock();
                         if (currentBlock == Blocks.STONE || currentBlock == BlockInit.deepslate) {
-                            world.setBlockState(pos, placeState, 2);
+                            // 2|16: без сканирования соседей на обсерверы (их нет при генерации)
+                            world.setBlockState(pos, placeState, 2 | 16);
                         }
                     }
                 }
@@ -168,7 +170,7 @@ public class ModWorldGen implements IWorldGenerator {
 
                     if (currentBlock == Blocks.STONE || currentBlock == BlockInit.deepslate || currentBlock == BlockInit.tuff) {
                         if (hasAirNeighbor(world, neighbor, px, py, pz)) {
-                            world.setBlockState(pos, sculkState, 2);
+                            world.setBlockState(pos, sculkState, 2 | 16);
                         }
                     }
                 }
