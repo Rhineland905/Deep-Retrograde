@@ -4,8 +4,8 @@ import com.deepretrograde.DeepRetrograde;
 import com.deepretrograde.init.BlockInit;
 import com.deepretrograde.init.ItemInit;
 import com.deepretrograde.util.IHasModel;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -15,22 +15,49 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemSlab;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.Random;
 
 public abstract class BlockCustomSlab extends BlockSlab implements IHasModel {
     // Вспомогательное свойство, которое требует Майнкрафт для плит
     public static final PropertyEnum<Variant> VARIANT = PropertyEnum.create("variant", Variant.class);
 
-    public BlockCustomSlab(String name, Material material) {
-        super(material);
+    // Ссылка на одинарную плиту: двойная дропает и "пикает" именно её
+    protected BlockSlab halfSlab;
+
+    @SuppressWarnings("deprecation")
+    public BlockCustomSlab(String name, Block base) {
+        super(base.getDefaultState().getMaterial());
         setTranslationKey(name);
         setRegistryName(name);
         this.useNeighborBrightness = true; // Убираем черные тени
+
+        // Раньше прочность не задавалась (0 = ломалась мгновенно рукой), звук был каменный.
+        // Берём всё у базового блока, как это делают ванильные ступеньки.
+        IBlockState baseState = base.getDefaultState();
+        setHardness(baseState.getBlockHardness(null, null));
+        setResistance(base.getExplosionResistance(null) * 5.0F / 3.0F);
+        setSoundType(base.getSoundType());
+        String tool = base.getHarvestTool(baseState);
+        if (tool != null) setHarvestLevel(tool, base.getHarvestLevel(baseState));
 
         IBlockState state = this.blockState.getBaseState().withProperty(VARIANT, Variant.DEFAULT);
         if (!this.isDouble()) {
             state = state.withProperty(HALF, EnumBlockHalf.BOTTOM);
         }
         this.setDefaultState(state);
+    }
+
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return Item.getItemFromBlock(halfSlab != null ? halfSlab : this);
+    }
+
+    @Override
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+        return new ItemStack(halfSlab != null ? halfSlab : this);
     }
 
     @Override
@@ -74,8 +101,8 @@ public abstract class BlockCustomSlab extends BlockSlab implements IHasModel {
     // --- МАГИЯ: ДВА КЛАССА ВНУТРИ ОДНОГО ДЛЯ ДВОЙНОЙ И ОДИНАРНОЙ ПЛИТЫ ---
 
     public static class Double extends BlockCustomSlab {
-        public Double(String name, Material material) {
-            super(name, material);
+        public Double(String name, Block base) {
+            super(name, base);
             BlockInit.BLOCKS.add(this);
         }
         @Override public boolean isDouble() { return true; }
@@ -83,8 +110,10 @@ public abstract class BlockCustomSlab extends BlockSlab implements IHasModel {
     }
 
     public static class Half extends BlockCustomSlab {
-        public Half(String name, Material material, BlockSlab doubleSlab) {
-            super(name, material);
+        public Half(String name, Block base, BlockSlab doubleSlab) {
+            super(name, base);
+            this.halfSlab = this;
+            if (doubleSlab instanceof BlockCustomSlab) ((BlockCustomSlab) doubleSlab).halfSlab = this;
             setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
             BlockInit.BLOCKS.add(this);
             // Регистрируем предмет-плиту, которая знает, как превращаться в двойную!

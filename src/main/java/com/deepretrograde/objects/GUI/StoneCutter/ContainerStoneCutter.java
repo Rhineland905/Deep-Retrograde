@@ -1,19 +1,36 @@
 package com.deepretrograde.objects.GUI.StoneCutter;
 
+import com.deepretrograde.init.BlockInit;
 import com.deepretrograde.init.SoundInit;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.Collections;
 import java.util.List;
 
 public class ContainerStoneCutter extends Container {
     private final InventoryBasic inventory = new InventoryBasic("StoneCutter", false, 2);
-    private List<StoneCutterRecipe> availableRecipes = new java.util.ArrayList<>();
+    private final World world;
+    private final BlockPos pos;
+    private List<StoneCutterRecipe> availableRecipes = Collections.emptyList();
     private int selectedRecipeIndex = -1;
 
-    public ContainerStoneCutter(InventoryPlayer playerInv) {
+    // Какой предмет лежал во входе в прошлый раз: выбор рецепта сбрасывается
+    // только при смене предмета, а не при каждом изменении количества.
+    private Item lastInputItem = null;
+    private int lastInputMeta = -1;
+    private long lastSoundTime;
+
+    public ContainerStoneCutter(InventoryPlayer playerInv, World world, BlockPos pos) {
+        this.world = world;
+        this.pos = pos;
+
         // Слот 0: Вход (на координатах 20, 33)
         this.addSlotToContainer(new Slot(inventory, 0, 20, 33) {
             @Override
@@ -30,15 +47,19 @@ public class ContainerStoneCutter extends Container {
 
             @Override
             public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+                stack.onCrafting(thePlayer.world, thePlayer, stack.getCount());
                 ItemStack input = inventory.getStackInSlot(0);
                 if (!input.isEmpty()) {
                     input.shrink(1);
                     updateAvailableRecipes();
                 }
-                thePlayer.world.playSound(null,
-                        thePlayer.posX, thePlayer.posY, thePlayer.posZ,
-                        SoundInit.STONECUTTER_USE, SoundCategory.BLOCKS,
-                        0.5F, 1.0F);
+                // Не спамим звуком при Shift-клике (он забирает предметы пачкой за один тик)
+                long time = thePlayer.world.getTotalWorldTime();
+                if (!thePlayer.world.isRemote && lastSoundTime != time) {
+                    lastSoundTime = time;
+                    thePlayer.world.playSound(null, pos,
+                            SoundInit.STONECUTTER_USE, SoundCategory.BLOCKS, 0.5F, 1.0F);
+                }
                 return super.onTake(thePlayer, stack);
             }
         });
@@ -54,10 +75,12 @@ public class ContainerStoneCutter extends Container {
         }
     }
 
-    // Этот метод вызывается, когда игрок кликает по рецепту в GUI (через sendEnchantPacket)
+    // Вызывается при клике по рецепту: на клиенте напрямую из GUI, на сервере через sendEnchantPacket.
+    // Раньше клиентский контейнер не знал о выборе — после любой синхронизации входного слота
+    // клиент обнулял выход, и результат "мигал"/пропадал до следующего пакета от сервера.
     @Override
     public boolean enchantItem(EntityPlayer playerIn, int id) {
-        if (availableRecipes != null && id >= 0 && id < availableRecipes.size()) {
+        if (id >= 0 && id < availableRecipes.size()) {
             this.selectedRecipeIndex = id;
             updateOutput();
             return true;
@@ -67,18 +90,25 @@ public class ContainerStoneCutter extends Container {
 
     private void updateAvailableRecipes() {
         ItemStack input = inventory.getStackInSlot(0);
-        // Получаем список рецептов из вашего менеджера рецептов
-        this.availableRecipes = StoneCutterRecipeManager.getRecipesForInput(input);
+        Item item = input.isEmpty() ? null : input.getItem();
+        int meta = input.isEmpty() ? -1 : input.getMetadata();
 
-        // Если список пуст или выбранный индекс стал невалидным, сбрасываем выход
-        if (availableRecipes.isEmpty() || selectedRecipeIndex >= availableRecipes.size()) {
+        if (item != lastInputItem || meta != lastInputMeta) {
+            lastInputItem = item;
+            lastInputMeta = meta;
+            selectedRecipeIndex = -1;
+            this.availableRecipes = StoneCutterRecipeManager.getRecipesForInput(input);
+        }
+
+        if (selectedRecipeIndex >= availableRecipes.size()) {
             selectedRecipeIndex = -1;
         }
         updateOutput();
     }
 
     private void updateOutput() {
-        if (selectedRecipeIndex != -1 && !availableRecipes.isEmpty()) {
+        if (selectedRecipeIndex >= 0 && selectedRecipeIndex < availableRecipes.size()
+                && !inventory.getStackInSlot(0).isEmpty()) {
             ItemStack result = availableRecipes.get(selectedRecipeIndex).getOutput().copy();
             this.inventory.setInventorySlotContents(1, result);
         } else {
@@ -100,10 +130,16 @@ public class ContainerStoneCutter extends Container {
                 if (!this.mergeItemStack(itemstack1, 2, 38, true)) return ItemStack.EMPTY;
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (index == 0) { // Если забираем из Входа
-                if (!this.mergeItemStack(itemstack1, 2, 38, true)) return ItemStack.EMPTY;
-            } else { // Если перекладываем из инвентаря игрока
-                // Пытаемся положить в слот Входа (0)
-                if (!this.mergeItemStack(itemstack1, 0, 1, false)) return ItemStack.EMPTY;
+                if (!this.mergeItemStack(itemstack1, 2, 38, false)) return ItemStack.EMPTY;
+            } else { // Из инвентаря игрока
+                // Есть рецепты — во вход, иначе между инвентарём и хотбаром
+                if (!StoneCutterRecipeManager.getRecipesForInput(itemstack1).isEmpty()) {
+                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) return ItemStack.EMPTY;
+                } else if (index < 29) {
+                    if (!this.mergeItemStack(itemstack1, 29, 38, false)) return ItemStack.EMPTY;
+                } else if (!this.mergeItemStack(itemstack1, 2, 29, false)) {
+                    return ItemStack.EMPTY;
+                }
             }
 
             if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY);
@@ -115,23 +151,30 @@ public class ContainerStoneCutter extends Container {
         return itemstack;
     }
 
-    // Возвращаем предметы на пол при закрытии интерфейса
+    // Возвращаем вход в инвентарь (или на пол, если места нет) при закрытии интерфейса
     @Override
     public void onContainerClosed(EntityPlayer playerIn) {
         super.onContainerClosed(playerIn);
+        // Выход "виртуальный" — его нельзя возвращать, иначе получится дюп
+        this.inventory.removeStackFromSlot(1);
         if (!playerIn.world.isRemote) {
-            ItemStack input = this.inventory.getStackInSlot(0);
-            if (!input.isEmpty()) playerIn.dropItem(input, false);
-
+            this.clearContainer(playerIn, playerIn.world, this.inventory);
         }
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
-        return true;
+        // Раньше всегда true: GUI оставался открытым после того, как камнерез сломали
+        // или игрок ушёл далеко
+        return world.getBlockState(pos).getBlock() == BlockInit.stonecutter
+                && playerIn.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     public List<StoneCutterRecipe> getAvailableRecipes() {
         return availableRecipes;
+    }
+
+    public int getSelectedRecipeIndex() {
+        return selectedRecipeIndex;
     }
 }

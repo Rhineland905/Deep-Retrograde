@@ -15,8 +15,8 @@ public class BlockInit {
     public static final Block calcite = new BlockCalcite("calcite", Material.ROCK);
     public static final Block calcite_stairs = new BlockCustomStairs("calcite_stairs", calcite.getDefaultState());
     public static final Block calcite_wall = new BlockCustomWall("calcite_wall", calcite);
-    public static final BlockSlab calcite_slab_double = new BlockCustomSlab.Double("calcite_slab_double", Material.ROCK);
-    public static final BlockSlab calcite_slab = new BlockCustomSlab.Half("calcite_slab", Material.ROCK, calcite_slab_double);
+    public static final BlockSlab calcite_slab_double = new BlockCustomSlab.Double("calcite_slab_double", calcite);
+    public static final BlockSlab calcite_slab = new BlockCustomSlab.Half("calcite_slab", calcite, calcite_slab_double);
 
     //sculk
     public static final Block sculk = new BlockSculk("sculk",Material.CLAY);
@@ -25,22 +25,22 @@ public class BlockInit {
     public static final Block tuff = new BlockTuff("tuff", Material.ROCK);
     public static final Block tuff_stairs = new BlockCustomStairs("tuff_stairs", tuff.getDefaultState());
     public static final Block tuff_wall = new BlockCustomWall("tuff_wall", tuff);
-    public static final BlockSlab tuff_slab_double = new BlockCustomSlab.Double("tuff_slab_double", Material.ROCK);
-    public static final BlockSlab tuff_slab = new BlockCustomSlab.Half("tuff_slab", Material.ROCK, tuff_slab_double);
+    public static final BlockSlab tuff_slab_double = new BlockCustomSlab.Double("tuff_slab_double", tuff);
+    public static final BlockSlab tuff_slab = new BlockCustomSlab.Half("tuff_slab", tuff, tuff_slab_double);
 
     //tuff_bricks
     public static Block tuff_bricks = new BlockTuffBricks("tuff_bricks", Material.ROCK);
-    public static final Block tuff_bricks_stairs = new BlockCustomStairs("tuff_bricks_stairs", tuff.getDefaultState());
+    public static final Block tuff_bricks_stairs = new BlockCustomStairs("tuff_bricks_stairs", tuff_bricks.getDefaultState());
     public static final Block tuff_bricks_wall = new BlockCustomWall("tuff_bricks_wall", tuff_bricks);
-    public static final BlockSlab tuff_bricks_slab_double = new BlockCustomSlab.Double("tuff_bricks_slab_double", Material.ROCK);
-    public static final BlockSlab tuff_bricks_slab = new BlockCustomSlab.Half("tuff_bricks_slab", Material.ROCK, tuff_bricks_slab_double);
+    public static final BlockSlab tuff_bricks_slab_double = new BlockCustomSlab.Double("tuff_bricks_slab_double", tuff_bricks);
+    public static final BlockSlab tuff_bricks_slab = new BlockCustomSlab.Half("tuff_bricks_slab", tuff_bricks, tuff_bricks_slab_double);
 
     //polished_tuff
     public static Block tuff_polished = new BlockTuffBricks("tuff_polished", Material.ROCK);
     public static final Block tuff_polished_stairs = new BlockCustomStairs("tuff_polished_stairs", tuff_polished.getDefaultState());
     public static final Block tuff_polished_wall = new BlockCustomWall("tuff_polished_wall", tuff_polished);
-    public static final BlockSlab tuff_polished_slab_double = new BlockCustomSlab.Double("tuff_polished_slab_double", Material.ROCK);
-    public static final BlockSlab tuff_polished_slab = new BlockCustomSlab.Half("tuff_polished_slab", Material.ROCK, tuff_polished_slab_double);
+    public static final BlockSlab tuff_polished_slab_double = new BlockCustomSlab.Double("tuff_polished_slab_double", tuff_polished);
+    public static final BlockSlab tuff_polished_slab = new BlockCustomSlab.Half("tuff_polished_slab", tuff_polished, tuff_polished_slab_double);
 
     //chiseled_tuff
     public static Block chiseled_tuff = new BlockTuff("chiseled_tuff", Material.ROCK);
@@ -62,15 +62,15 @@ public class BlockInit {
     public static  Block deepslate_bricks= new BlockCobbledDeepslate("deepslate_bricks", Material.ROCK);
     public static  Block deepslate_bricks_stairs= new BlockCustomStairs("deepslate_bricks_stairs", deepslate_bricks.getDefaultState());
     public static final Block deepslate_bricks_wall = new BlockCustomWall("deepslate_bricks_wall", deepslate_bricks);
-    public static final BlockSlab deepslate_bricks_slab_double = new BlockCustomSlab.Double("deepslate_bricks_slab_double", Material.ROCK);
-    public static final BlockSlab deepslate_bricks_slab = new BlockCustomSlab.Half("deepslate_bricks_slab", Material.ROCK, deepslate_bricks_slab_double);
+    public static final BlockSlab deepslate_bricks_slab_double = new BlockCustomSlab.Double("deepslate_bricks_slab_double", deepslate_bricks);
+    public static final BlockSlab deepslate_bricks_slab = new BlockCustomSlab.Half("deepslate_bricks_slab", deepslate_bricks, deepslate_bricks_slab_double);
 
     //Polished Deepslate
     public static  Block polished_deepslate= new BlockCobbledDeepslate("polished_deepslate", Material.ROCK);
     public static  Block polished_deepslate_stairs= new BlockCustomStairs("polished_deepslate_stairs", polished_deepslate.getDefaultState());
-    public static final Block polished_deepslate_wall = new BlockCustomWall("polished_deepslate_wall", deepslate_bricks);
-    public static final BlockSlab polished_deepslate_slab_double = new BlockCustomSlab.Double("polished_deepslate_slab_double", Material.ROCK);
-    public static final BlockSlab polished_deepslate_slab = new BlockCustomSlab.Half("polished_deepslate_slab", Material.ROCK, polished_deepslate_slab_double);
+    public static final Block polished_deepslate_wall = new BlockCustomWall("polished_deepslate_wall", polished_deepslate);
+    public static final BlockSlab polished_deepslate_slab_double = new BlockCustomSlab.Double("polished_deepslate_slab_double", polished_deepslate);
+    public static final BlockSlab polished_deepslate_slab = new BlockCustomSlab.Half("polished_deepslate_slab", polished_deepslate, polished_deepslate_slab_double);
 
     //Chiseled Deepslate
     public static  Block chiseled_deepslate= new BlockCobbledDeepslate("chiseled_deepslate", Material.ROCK);

@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import com.deepretrograde.proxy.CommonProxy;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -109,6 +110,11 @@ public class DeepRetrograde {
 		// Compatibility mode (cubicchunks:default — обёртка ванильного генератора)
 		io.github.opencubicchunks.cubicchunks.api.worldgen.CubeGeneratorsRegistry
 				.registerForCompatibilityGenerator(new CubicWorldGen());
+	}
+
+	@Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+		event.registerServerCommand(new com.deepretrograde.util.CommandSpawnDebug());
 	}
 
 	@Mod.EventHandler

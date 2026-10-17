@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Mouse;
@@ -33,11 +35,10 @@ public class GuiStoneCutter extends GuiContainer {
 
     private final ContainerStoneCutter container;
     private int  scrollRow          = 0;
-    private int  selectedRecipeIndex = -1;
     private boolean isScrolling     = false;
 
-    public GuiStoneCutter(InventoryPlayer playerInv) {
-        super(new ContainerStoneCutter(playerInv));
+    public GuiStoneCutter(InventoryPlayer playerInv, World world, BlockPos pos) {
+        super(new ContainerStoneCutter(playerInv, world, pos));
         this.container = (ContainerStoneCutter) this.inventorySlots;
         this.xSize = 227;
         this.ySize = 191;
@@ -51,6 +52,8 @@ public class GuiStoneCutter extends GuiContainer {
         int y = (this.height - this.ySize) / 2;
         int absScrollX = x + SCROLL_X;
         int absScrollY = y + SCROLL_Y;
+
+        scrollRow = MathHelper.clamp(scrollRow, 0, getMaxScrollRows());
 
         boolean isMouseDown = Mouse.isButtonDown(0);
         if (!isScrolling && isMouseDown
@@ -69,6 +72,26 @@ public class GuiStoneCutter extends GuiContainer {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
+        renderRecipeTooltip(mouseX, mouseY);
+    }
+
+    // Подсказка с названием результата при наведении на рецепт
+    private void renderRecipeTooltip(int mouseX, int mouseY) {
+        int index = getRecipeIndexAt(mouseX, mouseY);
+        if (index >= 0) {
+            this.renderToolTip(container.getAvailableRecipes().get(index).getOutput(), mouseX, mouseY);
+        }
+    }
+
+    /** Индекс рецепта под курсором или -1. Общий для отрисовки подсказки и кликов. */
+    private int getRecipeIndexAt(int mouseX, int mouseY) {
+        List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
+        if (recipes.isEmpty()) return -1;
+        int relX = mouseX - (this.guiLeft + GRID_X);
+        int relY = mouseY - (this.guiTop + GRID_Y);
+        if (relX < 0 || relY < 0 || relX >= COLUMNS * SLOT_SIZE || relY >= VISIBLE_ROWS * SLOT_SIZE) return -1;
+        int index = (relY / SLOT_SIZE + scrollRow) * COLUMNS + relX / SLOT_SIZE;
+        return index < recipes.size() ? index : -1;
     }
 
     @Override
@@ -94,7 +117,8 @@ public class GuiStoneCutter extends GuiContainer {
 
     private void renderRecipeIcons(int x, int y) {
         List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
-        if (recipes == null || recipes.isEmpty()) return;
+        if (recipes.isEmpty()) return;
+        int selectedRecipeIndex = container.getSelectedRecipeIndex();
 
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.enableRescaleNormal();
@@ -126,24 +150,11 @@ public class GuiStoneCutter extends GuiContainer {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseButton != 0) return;
 
-        List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
-        if (recipes == null || recipes.isEmpty()) return;
-
-        int x = (this.width  - this.xSize) / 2;
-        int y = (this.height - this.ySize) / 2;
-
-        for (int i = 0; i < VISIBLE_ROWS * COLUMNS; i++) {
-            int slotX = x + GRID_X + (i % COLUMNS) * SLOT_SIZE;
-            int slotY = y + GRID_Y + (i / COLUMNS) * SLOT_SIZE;
-
-            if (mouseX >= slotX && mouseX < slotX + SLOT_SIZE
-                    && mouseY >= slotY && mouseY < slotY + SLOT_SIZE) {
-                int recipeIndex = i + scrollRow * COLUMNS;
-                if (recipeIndex < recipes.size()) {
-                    selectedRecipeIndex = recipeIndex;
-                    this.mc.playerController.sendEnchantPacket(this.container.windowId, recipeIndex);
-                }
-            }
+        int recipeIndex = getRecipeIndexAt(mouseX, mouseY);
+        if (recipeIndex >= 0 && this.container.enchantItem(this.mc.player, recipeIndex)) {
+            this.mc.getSoundHandler().playSound(net.minecraft.client.audio.PositionedSoundRecord.getMasterRecord(
+                    net.minecraft.init.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            this.mc.playerController.sendEnchantPacket(this.container.windowId, recipeIndex);
         }
     }
 
@@ -158,9 +169,8 @@ public class GuiStoneCutter extends GuiContainer {
     }
 
     private int getMaxScrollRows() {
-        List<StoneCutterRecipe> recipes = container.getAvailableRecipes();
-        if (recipes == null || recipes.isEmpty()) return 0;
-        int totalRows = (int) Math.ceil((double) recipes.size() / COLUMNS);
+        int size = container.getAvailableRecipes().size();
+        int totalRows = (size + COLUMNS - 1) / COLUMNS;
         return Math.max(0, totalRows - VISIBLE_ROWS);
     }
 }

@@ -3,6 +3,7 @@ package com.deepretrograde.util.handlers;
 import com.deepretrograde.objects.GUI.StoneCutter.ContainerStoneCutter;
 import com.deepretrograde.objects.GUI.StoneCutter.GuiStoneCutter;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -15,7 +16,7 @@ public class GuiHandler implements IGuiHandler {
                                       int x, int y, int z) {
 
         if (ID == STONECUTTER) {
-            return new ContainerStoneCutter(player.inventory);
+            return new ContainerStoneCutter(player.inventory, world, new BlockPos(x, y, z));
         }
         return null;
     }
@@ -25,7 +26,7 @@ public class GuiHandler implements IGuiHandler {
                                       int x, int y, int z) {
 
         if (ID == STONECUTTER) {
-            return new GuiStoneCutter(player.inventory);
+            return new GuiStoneCutter(player.inventory, world, new BlockPos(x, y, z));
         }
         return null;
     }
